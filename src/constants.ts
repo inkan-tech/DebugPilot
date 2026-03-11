@@ -14,6 +14,10 @@ export const TOOL_DEBUG_BREAKPOINT_SET = "debug_breakpoint_set";
 export const TOOL_DEBUG_BREAKPOINT_REMOVE = "debug_breakpoint_remove";
 export const TOOL_DEBUG_EXCEPTION_CONFIG = "debug_exception_config";
 
+// Tool names (Flutter/Dart)
+export const TOOL_DEBUG_HOT_RELOAD = "debug_hot_reload";
+export const TOOL_DEBUG_HOT_RESTART = "debug_hot_restart";
+
 // Defaults
 export const DEFAULT_CONSOLE_BUFFER_SIZE = 10_000;
 export const DEFAULT_VARIABLE_DEPTH_LIMIT = 1;

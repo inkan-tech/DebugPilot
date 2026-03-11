@@ -13,6 +13,8 @@ import { registerDebugPause } from "./debug-pause.js";
 import { registerDebugBreakpointSet } from "./debug-breakpoint-set.js";
 import { registerDebugBreakpointRemove } from "./debug-breakpoint-remove.js";
 import { registerDebugExceptionConfig } from "./debug-exception-config.js";
+import { registerDebugHotReload } from "./debug-hot-reload.js";
+import { registerDebugHotRestart } from "./debug-hot-restart.js";
 
 export function registerAllTools(
   server: McpServer,
@@ -30,4 +32,6 @@ export function registerAllTools(
   registerDebugBreakpointSet(server, adapter);
   registerDebugBreakpointRemove(server, adapter);
   registerDebugExceptionConfig(server, adapter);
+  registerDebugHotReload(server, adapter);
+  registerDebugHotRestart(server, adapter);
 }

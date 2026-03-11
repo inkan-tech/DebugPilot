@@ -252,6 +252,12 @@ export class VscodeDebugAdapter implements IDebugAdapter {
     await session.customRequest("setExceptionBreakpoints", { filters });
   }
 
+  async customRequest(sessionId: string, command: string, args?: Record<string, unknown>): Promise<unknown> {
+    const session = this.sessionManager.getSession(sessionId);
+    if (!session) throw new Error(`Session ${sessionId} not found`);
+    return session.customRequest(command, args);
+  }
+
   dispose(): void {
     // No own resources to dispose; SessionManager handles its own
   }

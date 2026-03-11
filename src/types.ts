@@ -130,6 +130,13 @@ export interface IDebugAdapter {
     filters: string[],
   ): Promise<void>;
 
+  /** Send a custom DAP request (e.g., Flutter hotReload/hotRestart) */
+  customRequest(
+    sessionId: string,
+    command: string,
+    args?: Record<string, unknown>,
+  ): Promise<unknown>;
+
   /** Dispose resources */
   dispose(): void;
 }

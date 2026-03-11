@@ -9,7 +9,7 @@ export function registerDebugExceptionConfig(server: McpServer, adapter: IDebugA
     "Configure exception breakpoints (break on caught/uncaught exceptions)",
     {
       sessionId: z.string().describe("Debug session ID"),
-      filters: z.array(z.string()).describe('Exception filter IDs (e.g. ["uncaught", "caught"] for JS/TS, ["raised", "uncaught"] for Python)'),
+      filters: z.array(z.string()).describe('Exception filter IDs (e.g. ["uncaught", "caught"] for JS/TS, ["raised", "uncaught"] for Python, ["All", "Unhandled"] for Dart/Flutter)'),
     },
     async ({ sessionId, filters }) => {
       await adapter.setExceptionBreakpoints(sessionId, filters);
