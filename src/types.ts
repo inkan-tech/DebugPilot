@@ -98,6 +98,38 @@ export interface IDebugAdapter {
   /** List all breakpoints */
   getBreakpoints(): BreakpointInfo[];
 
+  // --- Phase 2: Control ---
+
+  /** Continue execution of a paused session */
+  continue(sessionId: string, threadId?: number): Promise<void>;
+
+  /** Step over / into / out */
+  step(
+    sessionId: string,
+    type: "over" | "into" | "out",
+    threadId?: number,
+  ): Promise<void>;
+
+  /** Pause a running session */
+  pause(sessionId: string, threadId?: number): Promise<void>;
+
+  /** Set a breakpoint */
+  setBreakpoint(
+    file: string,
+    line: number,
+    condition?: string,
+    logMessage?: string,
+  ): Promise<BreakpointInfo>;
+
+  /** Remove a breakpoint by ID */
+  removeBreakpoint(id: string): Promise<void>;
+
+  /** Configure exception breakpoints */
+  setExceptionBreakpoints(
+    sessionId: string,
+    filters: string[],
+  ): Promise<void>;
+
   /** Dispose resources */
   dispose(): void;
 }

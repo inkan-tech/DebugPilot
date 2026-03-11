@@ -1,10 +1,18 @@
-// Tool names (Phase 1)
+// Tool names (Phase 1 — read-only)
 export const TOOL_DEBUG_SESSIONS = "debug_sessions";
 export const TOOL_DEBUG_STATE = "debug_state";
 export const TOOL_DEBUG_VARIABLES = "debug_variables";
 export const TOOL_DEBUG_EVALUATE = "debug_evaluate";
 export const TOOL_DEBUG_CONSOLE = "debug_console";
 export const TOOL_DEBUG_BREAKPOINTS_LIST = "debug_breakpoints_list";
+
+// Tool names (Phase 2 — control)
+export const TOOL_DEBUG_CONTINUE = "debug_continue";
+export const TOOL_DEBUG_STEP = "debug_step";
+export const TOOL_DEBUG_PAUSE = "debug_pause";
+export const TOOL_DEBUG_BREAKPOINT_SET = "debug_breakpoint_set";
+export const TOOL_DEBUG_BREAKPOINT_REMOVE = "debug_breakpoint_remove";
+export const TOOL_DEBUG_EXCEPTION_CONFIG = "debug_exception_config";
 
 // Defaults
 export const DEFAULT_CONSOLE_BUFFER_SIZE = 10_000;

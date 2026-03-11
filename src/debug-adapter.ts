@@ -186,11 +186,85 @@ export class VscodeDebugAdapter implements IDebugAdapter {
       }));
   }
 
+  async continue(sessionId: string, threadId?: number): Promise<void> {
+    const session = this.sessionManager.getSession(sessionId);
+    if (!session) throw new Error(`Session ${sessionId} not found`);
+    const tid = await this.resolveThreadId(session, threadId);
+    await session.customRequest("continue", { threadId: tid });
+  }
+
+  async step(sessionId: string, type: "over" | "into" | "out", threadId?: number): Promise<void> {
+    const session = this.sessionManager.getSession(sessionId);
+    if (!session) throw new Error(`Session ${sessionId} not found`);
+    const tid = await this.resolveThreadId(session, threadId);
+    const command = type === "over" ? "next" : type === "into" ? "stepIn" : "stepOut";
+    await session.customRequest(command, { threadId: tid });
+  }
+
+  async pause(sessionId: string, threadId?: number): Promise<void> {
+    const session = this.sessionManager.getSession(sessionId);
+    if (!session) throw new Error(`Session ${sessionId} not found`);
+    const tid = await this.resolveThreadId(session, threadId);
+    await session.customRequest("pause", { threadId: tid });
+  }
+
+  async setBreakpoint(
+    file: string,
+    line: number,
+    condition?: string,
+    logMessage?: string,
+  ): Promise<BreakpointInfo> {
+    const uri = vscode.Uri.file(file);
+    const position = new vscode.Position(line - 1, 0); // VS Code is 0-indexed
+    const location = new vscode.Location(uri, position);
+    const bp = new vscode.SourceBreakpoint(location, true, condition, undefined, logMessage);
+    vscode.debug.addBreakpoints([bp]);
+
+    return {
+      id: `BP#${vscode.debug.breakpoints.length}`,
+      file,
+      line,
+      enabled: true,
+      condition,
+    };
+  }
+
+  async removeBreakpoint(id: string): Promise<void> {
+    // BP#N format — find the breakpoint by index
+    const match = id.match(/^BP#(\d+)$/);
+    if (!match) throw new Error(`Invalid breakpoint ID: ${id}`);
+
+    const index = parseInt(match[1], 10) - 1;
+    const sourceBreakpoints = vscode.debug.breakpoints.filter(
+      (bp): bp is vscode.SourceBreakpoint => bp instanceof vscode.SourceBreakpoint,
+    );
+
+    if (index < 0 || index >= sourceBreakpoints.length) {
+      throw new Error(`Breakpoint ${id} not found`);
+    }
+
+    vscode.debug.removeBreakpoints([sourceBreakpoints[index]]);
+  }
+
+  async setExceptionBreakpoints(sessionId: string, filters: string[]): Promise<void> {
+    const session = this.sessionManager.getSession(sessionId);
+    if (!session) throw new Error(`Session ${sessionId} not found`);
+    await session.customRequest("setExceptionBreakpoints", { filters });
+  }
+
   dispose(): void {
     // No own resources to dispose; SessionManager handles its own
   }
 
   // --- Private helpers ---
+
+  private async resolveThreadId(session: vscode.DebugSession, threadId?: number): Promise<number> {
+    if (threadId !== undefined) return threadId;
+    const threadsResponse = await session.customRequest("threads");
+    const threads: Array<{ id: number }> = threadsResponse.threads ?? [];
+    if (threads.length === 0) throw new Error("No threads available");
+    return threads[0].id;
+  }
 
   private async fetchVariables(
     session: vscode.DebugSession,

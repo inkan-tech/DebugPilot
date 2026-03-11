@@ -1,0 +1,21 @@
+import { z } from "zod";
+import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { IDebugAdapter } from "../types.js";
+import { TOOL_DEBUG_EXCEPTION_CONFIG } from "../constants.js";
+
+export function registerDebugExceptionConfig(server: McpServer, adapter: IDebugAdapter): void {
+  server.tool(
+    TOOL_DEBUG_EXCEPTION_CONFIG,
+    "Configure exception breakpoints (break on caught/uncaught exceptions)",
+    {
+      sessionId: z.string().describe("Debug session ID"),
+      filters: z.array(z.string()).describe('Exception filter IDs (e.g. ["uncaught", "caught"] for JS/TS, ["raised", "uncaught"] for Python)'),
+    },
+    async ({ sessionId, filters }) => {
+      await adapter.setExceptionBreakpoints(sessionId, filters);
+      return {
+        content: [{ type: "text" as const, text: JSON.stringify({ status: "configured", filters }) }],
+      };
+    },
+  );
+}

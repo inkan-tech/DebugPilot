@@ -7,6 +7,12 @@ import { registerDebugVariables } from "./debug-variables.js";
 import { registerDebugEvaluate } from "./debug-evaluate.js";
 import { registerDebugConsole } from "./debug-console.js";
 import { registerDebugBreakpointsList } from "./debug-breakpoints-list.js";
+import { registerDebugContinue } from "./debug-continue.js";
+import { registerDebugStep } from "./debug-step.js";
+import { registerDebugPause } from "./debug-pause.js";
+import { registerDebugBreakpointSet } from "./debug-breakpoint-set.js";
+import { registerDebugBreakpointRemove } from "./debug-breakpoint-remove.js";
+import { registerDebugExceptionConfig } from "./debug-exception-config.js";
 
 export function registerAllTools(
   server: McpServer,
@@ -18,4 +24,10 @@ export function registerAllTools(
   registerDebugEvaluate(server, adapter);
   registerDebugConsole(server, adapter);
   registerDebugBreakpointsList(server, adapter);
+  registerDebugContinue(server, adapter);
+  registerDebugStep(server, adapter);
+  registerDebugPause(server, adapter);
+  registerDebugBreakpointSet(server, adapter);
+  registerDebugBreakpointRemove(server, adapter);
+  registerDebugExceptionConfig(server, adapter);
 }
