@@ -1,6 +1,6 @@
 # PRD-014: VS Code Debug MCP Server
 
-**Status**: Draft
+**Status**: Phase 1 Complete, Phase 2 In Progress
 **Priority**: High
 **Created**: 2026-03-11
 **Target**: Open-source VS Code extension + MCP server
@@ -13,7 +13,7 @@ The VS Code Debug Adapter Protocol (DAP) is rich and standardized. No MCP server
 
 ## Solution
 
-Build a VS Code extension that runs an MCP server exposing the Debug Adapter Protocol. Any AI agent with MCP support can then:
+Build a VS Code extension that runs an MCP server exposing the Debug Adapter Protocol. Any AI agent with MCP support can th en:
 
 - Read debug console output
 - Inspect variables at breakpoints
@@ -40,7 +40,7 @@ Build a VS Code extension that runs an MCP server exposing the Debug Adapter Pro
 ## Architecture
 
 ```
-┌─────────────┐     MCP (stdio/SSE)     ┌──────────────────┐
+┌─────────────┐   MCP (Streamable HTTP)  ┌──────────────────┐
 │  AI Agent   │ ◄──────────────────────► │  MCP Server      │
 │ (Claude Code│                          │  (in extension)  │
 │  Cursor etc)│                          └────────┬─────────┘
@@ -356,9 +356,9 @@ Pre-built prompt: "Trace execution from point A to point B." Sets temporary brea
 
 ## Key Technical Decisions
 
-### Transport: stdio (not SSE)
+### Transport: Streamable HTTP (not SSE or stdio)
 
-Claude Code and most AI agents use stdio for MCP. The extension spawns a child process or communicates via the extension host. SSE can be added later for remote agents.
+The extension runs an HTTP server on localhost:4711 using the MCP Streamable HTTP transport (`POST/GET/DELETE /mcp`). This avoids OAuth discovery issues that plague the legacy SSE transport while keeping the server accessible from any MCP client. No authentication is required for local connections.
 
 ### Buffering console output
 
