@@ -1,0 +1,38 @@
+{
+  "project": {
+    "name": "vscode-debug-mcp",
+    "description": "CCPM managed project",
+    "repository": {
+      "url": "",
+      "defaultBranch": "main"
+    }
+  },
+  "directories": {
+    "ccpm": "ccpm",
+    "specs": "specs",
+    "worktrees": "worktrees"
+  },
+  "github": {
+    "enabled": true,
+    "issueLabels": ["epic","feature","bug","enhancement","documentation","testing","infrastructure"],
+    "priorities": ["low","medium","high","critical"],
+    "statuses": ["backlog","in-progress","review","done"]
+  },
+  "workflow": {
+    "branchNaming": {
+      "epic": "epic/{name}",
+      "feature": "feature/{name}",
+      "bugfix": "bugfix/{name}",
+      "hotfix": "hotfix/{name}"
+    },
+    "autoAssignIssues": true,
+    "requireReviewForMerge": true
+  },
+  "ai": {
+    "maxConcurrentAgents": 3,
+    "defaultAgentModel": "sonnet-4-5",
+    "timeoutMinutes": 30
+  },
+  "created": "2026-03-11T14:49:46Z",
+  "lastUpdated": "2026-03-11T14:49:46Z"
+}
