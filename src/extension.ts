@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { SessionManager } from "./session-manager.js";
 import { VscodeDebugAdapter } from "./debug-adapter.js";
 import { DebugMcpServer } from "./server.js";
+import { DebugOutputTrackerFactory } from "./debug-tracker.js";
 import { CONFIG_SECTION } from "./constants.js";
 
 let server: DebugMcpServer | undefined;
@@ -28,6 +29,12 @@ export async function activate(
     );
     return;
   }
+
+  // Register debug adapter tracker to capture console output
+  const trackerFactory = new DebugOutputTrackerFactory(sessionManager);
+  context.subscriptions.push(
+    vscode.debug.registerDebugAdapterTrackerFactory("*", trackerFactory),
+  );
 
   // Register commands
   context.subscriptions.push(

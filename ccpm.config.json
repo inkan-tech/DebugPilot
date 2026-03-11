@@ -1,9 +1,9 @@
 {
   "project": {
-    "name": "vscode-debug-mcp",
-    "description": "CCPM managed project",
+    "name": "DebugPilot",
+    "description": "VS Code extension exposing Debug Adapter Protocol via MCP to AI agents",
     "repository": {
-      "url": "",
+      "url": "https://github.com/inkan-tech/DebugPilot",
       "defaultBranch": "main"
     }
   },

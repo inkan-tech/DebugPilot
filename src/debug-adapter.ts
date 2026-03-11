@@ -107,7 +107,7 @@ export class VscodeDebugAdapter implements IDebugAdapter {
 
     return {
       paused,
-      reason: "breakpoint", // TODO: derive from stopped event
+      reason: this.sessionManager.getPauseState(sessionId)?.reason,
       location: topFrame
         ? {
             file: topFrame.file,
@@ -215,7 +215,7 @@ export class VscodeDebugAdapter implements IDebugAdapter {
       variableReference: v.variablesReference,
     }));
 
-    // Recursively expand if depth > 1
+    // Recursively expand children if depth > 1
     if (depth > 1) {
       for (const v of variables) {
         if (v.variableReference > 0) {
@@ -224,9 +224,8 @@ export class VscodeDebugAdapter implements IDebugAdapter {
             v.variableReference,
             depth - 1,
           );
-          // Attach as a string representation for now
           if (children.length > 0) {
-            v.value = `{ ${children.map((c) => `${c.name}: ${c.value}`).join(", ")} }`;
+            v.children = children;
           }
         }
       }

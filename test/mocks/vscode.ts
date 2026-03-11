@@ -8,6 +8,9 @@ export const debug = {
   onDidStartDebugSession: (_cb: any) => ({ dispose: () => {} }),
   onDidTerminateDebugSession: (_cb: any) => ({ dispose: () => {} }),
   onDidReceiveDebugSessionCustomEvent: (_cb: any) => ({ dispose: () => {} }),
+  registerDebugAdapterTrackerFactory: (_type: string, _factory: any) => ({
+    dispose: () => {},
+  }),
 };
 
 export const workspace = {

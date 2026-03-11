@@ -36,6 +36,7 @@ export interface Variable {
   value: string;
   type?: string;
   variableReference: number;
+  children?: Variable[];
 }
 
 export interface ConsoleMessage {

@@ -1,6 +1,6 @@
 {
   "project": {
-    "status": "initialized",
+    "status": "active",
     "currentEpic": null,
     "activeIssues": [],
     "activeWorktrees": []
@@ -15,15 +15,15 @@
     "completed": []
   },
   "github": {
-    "lastSync": null,
+    "lastSync": "2026-03-11T19:00:00Z",
     "syncEnabled": true
   },
   "stats": {
-    "totalEpics": 0,
+    "totalEpics": 4,
     "completedEpics": 0,
-    "totalIssues": 0,
-    "completedIssues": 0
+    "totalIssues": 29,
+    "completedIssues": 1
   },
   "initializedAt": "2026-03-11T14:49:49Z",
-  "lastActivity": "2026-03-11T14:49:49Z"
+  "lastActivity": "2026-03-11T19:00:00Z"
 }
