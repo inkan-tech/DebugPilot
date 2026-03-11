@@ -22,6 +22,10 @@ DebugPilot is a VS Code extension that exposes the Debug Adapter Protocol (DAP) 
 - **`debug_breakpoint_remove`** — remove breakpoints by ID
 - **`debug_exception_config`** — configure exception breakpoints (caught/uncaught)
 
+### Flutter / Dart
+- **`debug_hot_reload`** — inject code changes into running Dart VM (preserves app state)
+- **`debug_hot_restart`** — full restart with code update (resets app state)
+
 ## Quick Start
 
 ### Install from Source
@@ -95,6 +99,14 @@ Agent: Break when userId equals "admin"
 → calls debug_continue
 ```
 
+### Flutter hot reload
+
+```
+Agent: I changed the widget, hot reload please
+→ calls debug_hot_reload(sessionId: "abc123")
+→ "Hot reload complete — UI updated with your changes, app state preserved"
+```
+
 ## Architecture
 
 ```
@@ -123,6 +135,7 @@ DebugPilot works with any VS Code debug adapter:
 |---------|---------------|--------|
 | Node.js | `pwa-node` | Tested |
 | Bun | `bun` | Tested |
+| Flutter/Dart | `dart` | Supported (hot reload/restart) |
 | Python | `debugpy` | Planned |
 | Go | `dlv` | Planned |
 | Rust/C++ | `lldb` / `codelldb` | Planned |
@@ -208,4 +221,4 @@ src/
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+Apache 2.0 — see [LICENSE](LICENSE).
