@@ -3,8 +3,10 @@
   "displayName": "DebugPilot",
   "description": "MCP server exposing VS Code Debug Adapter Protocol to AI agents",
   "version": "0.2.0",
-  "publisher": "inkan-tech",
+  "publisher": "inkan-link",
   "license": "MIT",
+  "icon": "assets/icon.png",
+  "homepage": "https://github.com/inkan-tech/DebugPilot",
   "repository": {
     "type": "git",
     "url": "https://github.com/inkan-tech/DebugPilot"

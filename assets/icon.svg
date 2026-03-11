@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#16213e"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#00d2ff"/>
+      <stop offset="100%" stop-color="#7b2ff7"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="128" height="128" rx="24" fill="url(#bg)"/>
+
+  <!-- Compass ring -->
+  <circle cx="64" cy="64" r="38" fill="none" stroke="url(#accent)" stroke-width="2.5" stroke-opacity="0.5"/>
+  <circle cx="64" cy="64" r="38" fill="none" stroke="url(#accent)" stroke-width="1.5" stroke-dasharray="4 3" stroke-opacity="0.4"/>
+
+  <!-- Tick marks -->
+  <line x1="64" y1="22" x2="64" y2="28" stroke="#00d2ff" stroke-width="2" stroke-linecap="round"/>
+  <line x1="64" y1="100" x2="64" y2="106" stroke="#00d2ff" stroke-width="2" stroke-linecap="round"/>
+  <line x1="22" y1="64" x2="28" y2="64" stroke="#00d2ff" stroke-width="2" stroke-linecap="round"/>
+  <line x1="100" y1="64" x2="106" y2="64" stroke="#00d2ff" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Breakpoint center -->
+  <circle cx="64" cy="64" r="12" fill="#e74856"/>
+  <circle cx="64" cy="64" r="12" fill="none" stroke="#ff6b7a" stroke-width="1" stroke-opacity="0.5"/>
+  <!-- Pause bars -->
+  <rect x="60" y="58" width="3" height="12" rx="1" fill="#1a1a2e"/>
+  <rect x="65" y="58" width="3" height="12" rx="1" fill="#1a1a2e"/>
+
+  <!-- Compass needle -->
+  <g transform="translate(64, 64) rotate(-45)">
+    <polygon points="0,-34 -5,-16 0,-20 5,-16" fill="url(#accent)" opacity="0.9"/>
+    <polygon points="0,34 -5,16 0,20 5,16" fill="#3a3a5c" opacity="0.5"/>
+  </g>
+</svg>
