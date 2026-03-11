@@ -48,13 +48,15 @@ export async function activate(
     vscode.commands.registerCommand("debugPilot.showStatus", () => {
       const sessions = adapter?.getSessions() ?? [];
       vscode.window.showInformationMessage(
-        `DebugPilot: ${sessions.length} active session(s)`,
+        `DebugPilot: ${sessions.length} active session(s) — http://127.0.0.1:${server?.port}/mcp`,
       );
     }),
     sessionManager,
   );
 
-  vscode.window.showInformationMessage("DebugPilot: MCP server started");
+  vscode.window.showInformationMessage(
+    `DebugPilot: MCP server running on http://127.0.0.1:${server.port}/mcp`,
+  );
 }
 
 export async function deactivate(): Promise<void> {
