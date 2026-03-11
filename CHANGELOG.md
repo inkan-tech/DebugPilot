@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.6.0] - 2026-03-11
+
+### Added
+- Flutter/Dart support: `debug_hot_reload` and `debug_hot_restart` tools
+- Generic `customRequest` method on IDebugAdapter for runtime-specific DAP extensions
+- Dart exception filter IDs (`"All"`, `"Unhandled"`) documented in `debug_exception_config`
+- Flutter hot reload usage example in README
+
+### Changed
+- License changed from MIT to Apache 2.0
+- Version bumped to 0.6.0
+
+## [0.5.0] - 2026-03-11
+
+### Added
+- Published to VS Code Marketplace as pre-release (`inkan-link.debugpilot`)
+- `publish-vsce` Claude Code skill for automated publishing
+- Publishing guide (`docs/publish.md`)
+- `claude mcp add` CLI command documented in README
+
+### Changed
+- Publisher corrected to `inkan-link`
+
 ## [0.2.0] - 2026-03-11
 
 ### Added
