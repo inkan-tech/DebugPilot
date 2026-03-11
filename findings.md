@@ -29,6 +29,12 @@
 - CHANGELOG.md expected by marketplace
 - Publisher `inkan-tech` must exist on marketplace
 
+## Publishing
+- Can publish via `az` CLI token instead of a manual PAT
+- `az account get-access-token --resource "499b84ac-1321-427f-aa17-267ca6975798"` gives a valid token for vsce
+- Pass with `--pat "$TOKEN"` flag to `npx vsce publish`
+- Publisher is `inkan-link`, extension URL: https://marketplace.visualstudio.com/items?itemName=inkan-link.debugpilot
+
 ## Debug Session Observations (live testing)
 - Exception breakpoints default to breaking on ALL exceptions (caught + uncaught)
 - Third-party extensions (Bun, LLDB) throw caught exceptions during activation

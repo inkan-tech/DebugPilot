@@ -6,7 +6,7 @@ DebugPilot is a VS Code extension that exposes the Debug Adapter Protocol (DAP) 
 
 ## Features
 
-### Read (Phase 1)
+### Inspection
 - **`debug_sessions`** — list active debug sessions with status and pause reason
 - **`debug_state`** — full snapshot: pause location, source context, locals, call stack
 - **`debug_variables`** — get/expand variables with configurable depth (up to 5 levels)
@@ -14,7 +14,7 @@ DebugPilot is a VS Code extension that exposes the Debug Adapter Protocol (DAP) 
 - **`debug_console`** — buffered console output with regex filtering and timestamp queries
 - **`debug_breakpoints_list`** — list all breakpoints with conditions and hit counts
 
-### Control (Phase 2)
+### Control
 - **`debug_continue`** — resume execution
 - **`debug_step`** — step over / into / out
 - **`debug_pause`** — pause a running session
@@ -33,18 +33,24 @@ pnpm install
 pnpm run build
 ```
 
-Then press `F5` in VS Code to launch the Extension Development Host, or package it:
+Then press `F5` in VS Code to launch the Extension Development Host, or package and install:
 
 ```bash
-pnpm run package   # Creates debugpilot-0.2.0.vsix
-code --install-extension debugpilot-0.2.0.vsix
+pnpm run package
+code --install-extension debugpilot-0.5.0.vsix
 ```
 
 ### Connect Your AI Agent
 
 DebugPilot starts an MCP server on `http://127.0.0.1:45853/mcp` using the Streamable HTTP transport.
 
-**Claude Code** — add to your `.mcp.json`:
+#### Claude Code (CLI)
+
+```bash
+claude mcp add debugpilot --transport http http://127.0.0.1:45853/mcp
+```
+
+Or add manually to your project `.mcp.json`:
 
 ```json
 {
@@ -56,7 +62,9 @@ DebugPilot starts an MCP server on `http://127.0.0.1:45853/mcp` using the Stream
 }
 ```
 
-**Cursor / Other MCP clients** — point to the same URL. Any client supporting MCP Streamable HTTP will work.
+#### Cursor / Other MCP clients
+
+Point to the same URL. Any client supporting MCP Streamable HTTP will work.
 
 ## Usage Examples
 
@@ -191,9 +199,9 @@ src/
 
 ## Roadmap
 
-- [ ] **Phase 3**: MCP resources with subscriptions (live console stream, breakpoint events)
-- [ ] **Phase 3**: Pre-built prompts (`debug_investigate`, `debug_trace`)
-- [ ] **Phase 4**: Multi-runtime validation (Python, Go, Rust, Java)
+- [ ] MCP resources with subscriptions (live console stream, breakpoint events)
+- [ ] Pre-built prompts (`debug_investigate`, `debug_trace`)
+- [ ] Multi-runtime validation (Python, Go, Rust, Java)
 - [ ] `debug_launch` / `debug_stop` — start/stop debug sessions
 - [ ] `debug_run_to` — run to a specific line
 - [ ] Logpoint support
