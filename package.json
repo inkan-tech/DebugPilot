@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/inkan-tech/vscode-debug-mcp"
+    "url": "https://github.com/inkan-tech/DebugPilot"
   },
   "engines": {
     "vscode": "^1.96.0"
