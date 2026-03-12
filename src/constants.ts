@@ -14,6 +14,11 @@ export const TOOL_DEBUG_BREAKPOINT_SET = "debug_breakpoint_set";
 export const TOOL_DEBUG_BREAKPOINT_REMOVE = "debug_breakpoint_remove";
 export const TOOL_DEBUG_EXCEPTION_CONFIG = "debug_exception_config";
 
+export const TOOL_DEBUG_LAUNCH = "debug_launch";
+export const TOOL_DEBUG_STOP = "debug_stop";
+export const TOOL_DEBUG_LOGPOINT_SET = "debug_logpoint_set";
+export const TOOL_DEBUG_RUN_TO = "debug_run_to";
+
 // Tool names (Flutter/Dart)
 export const TOOL_DEBUG_HOT_RELOAD = "debug_hot_reload";
 export const TOOL_DEBUG_HOT_RESTART = "debug_hot_restart";

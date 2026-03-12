@@ -11,6 +11,10 @@ export const debug = {
   registerDebugAdapterTrackerFactory: (_type: string, _factory: any) => ({
     dispose: () => {},
   }),
+  startDebugging: async (_folder: any, _config: any) => true,
+  stopDebugging: async (_session: any) => {},
+  addBreakpoints: (_breakpoints: any[]) => {},
+  removeBreakpoints: (_breakpoints: any[]) => {},
 };
 
 export const workspace = {

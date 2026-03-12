@@ -130,6 +130,23 @@ export interface IDebugAdapter {
     filters: string[],
   ): Promise<void>;
 
+  /** Launch a debug configuration by name */
+  launch(configName: string): Promise<{ sessionId: string; status: string }>;
+
+  /** Stop a debug session */
+  stop(sessionId: string): Promise<void>;
+
+  /** Set a logpoint (logs without pausing) */
+  setLogpoint(
+    file: string,
+    line: number,
+    message: string,
+    condition?: string,
+  ): Promise<BreakpointInfo>;
+
+  /** Run to a specific line (temporary breakpoint + continue) */
+  runTo(sessionId: string, file: string, line: number): Promise<void>;
+
   /** Send a custom DAP request (e.g., Flutter hotReload/hotRestart) */
   customRequest(
     sessionId: string,

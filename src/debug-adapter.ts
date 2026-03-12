@@ -252,6 +252,50 @@ export class VscodeDebugAdapter implements IDebugAdapter {
     await session.customRequest("setExceptionBreakpoints", { filters });
   }
 
+  async launch(configName: string): Promise<{ sessionId: string; status: string }> {
+    const sessionsBefore = new Set(this.sessionManager.getAllSessions().keys());
+    const started = await vscode.debug.startDebugging(undefined, configName);
+    if (!started) {
+      throw new Error(`Failed to launch configuration "${configName}"`);
+    }
+
+    // Find the newly created session
+    const sessionsAfter = this.sessionManager.getAllSessions();
+    for (const [id] of sessionsAfter) {
+      if (!sessionsBefore.has(id)) {
+        return { sessionId: id, status: "launched" };
+      }
+    }
+
+    // Fallback: use active session
+    const active = vscode.debug.activeDebugSession;
+    if (active) {
+      return { sessionId: active.id, status: "launched" };
+    }
+
+    throw new Error("Session started but could not determine sessionId");
+  }
+
+  async stop(sessionId: string): Promise<void> {
+    const session = this.sessionManager.getSession(sessionId);
+    if (!session) throw new Error(`Session ${sessionId} not found`);
+    await vscode.debug.stopDebugging(session);
+  }
+
+  async setLogpoint(
+    file: string,
+    line: number,
+    message: string,
+    condition?: string,
+  ): Promise<BreakpointInfo> {
+    return this.setBreakpoint(file, line, condition, message);
+  }
+
+  async runTo(sessionId: string, file: string, line: number): Promise<void> {
+    await this.setBreakpoint(file, line);
+    await this.continue(sessionId);
+  }
+
   async customRequest(sessionId: string, command: string, args?: Record<string, unknown>): Promise<unknown> {
     const session = this.sessionManager.getSession(sessionId);
     if (!session) throw new Error(`Session ${sessionId} not found`);
