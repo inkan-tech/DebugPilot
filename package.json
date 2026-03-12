@@ -2,7 +2,7 @@
   "name": "debugpilot",
   "displayName": "DebugPilot",
   "description": "MCP server exposing VS Code Debug Adapter Protocol to AI agents",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "publisher": "inkan-link",
   "license": "Apache-2.0",
   "icon": "assets/icon.png",

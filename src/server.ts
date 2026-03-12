@@ -17,7 +17,7 @@ export class DebugMcpServer {
   constructor(private readonly adapter: IDebugAdapter) {
     this.server = new McpServer({
       name: EXTENSION_ID,
-      version: "0.6.1",
+      version: "0.6.2",
     });
 
     registerAllTools(this.server, this.adapter);
