@@ -8,13 +8,13 @@
     "url": "https://github.com/inkan-tech/DebugPilot",
     "source": "github"
   },
-  "version": "0.7.1",
+  "version": "0.7.2",
   "packages": [
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "debugpilot-mcp",
-      "version": "0.7.1",
+      "version": "0.7.2",
       "transport": {
         "type": "streamable-http",
         "authorization": "none"
