@@ -31,7 +31,7 @@ describe("MCP server integration", () => {
     it("GET /health returns 200 with status ok", async () => {
       const res = await httpRequest(port, "GET", "/health");
       expect(res.status).toBe(200);
-      expect(res.body).toEqual({
+      expect(res.body).toMatchObject({
         status: "ok",
         name: "debugpilot",
       });

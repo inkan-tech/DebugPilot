@@ -12,16 +12,20 @@ import { NotificationManager } from "./notifications.js";
 import { EXTENSION_ID } from "./constants.js";
 
 const DEFAULT_PORT = 45853;
+const SESSION_IDLE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+const CLEANUP_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 
 interface SessionEntry {
   server: McpServer;
   transport: StreamableHTTPServerTransport;
   notificationManager?: NotificationManager;
+  lastActivity: number;
 }
 
 export class DebugMcpServer {
   private httpServer: http.Server | undefined;
   private sessions = new Map<string, SessionEntry>();
+  private cleanupTimer: ReturnType<typeof setInterval> | undefined;
   private _port: number = DEFAULT_PORT;
 
   constructor(
@@ -54,7 +58,7 @@ export class DebugMcpServer {
     const transport = new StreamableHTTPServerTransport({
       sessionIdGenerator: () => randomUUID(),
       onsessioninitialized: (sessionId: string) => {
-        this.sessions.set(sessionId, { server, transport, notificationManager });
+        this.sessions.set(sessionId, { server, transport, notificationManager, lastActivity: Date.now() });
       },
     });
 
@@ -68,6 +72,39 @@ export class DebugMcpServer {
     };
 
     return { server, transport, notificationManager };
+  }
+
+  private startCleanupTimer(): void {
+    this.cleanupTimer = setInterval(() => {
+      const now = Date.now();
+      for (const [sid, entry] of this.sessions) {
+        if (now - entry.lastActivity > SESSION_IDLE_TIMEOUT_MS) {
+          console.log(`[DebugPilot] Cleaning up idle session ${sid} (inactive ${Math.round((now - entry.lastActivity) / 60000)}m)`);
+          entry.notificationManager?.dispose();
+          entry.transport.close().catch(() => {});
+          entry.server.close().catch(() => {});
+          this.sessions.delete(sid);
+        }
+      }
+    }, CLEANUP_INTERVAL_MS);
+    // Don't block process exit
+    if (this.cleanupTimer.unref) {
+      this.cleanupTimer.unref();
+    }
+  }
+
+  private stopCleanupTimer(): void {
+    if (this.cleanupTimer) {
+      clearInterval(this.cleanupTimer);
+      this.cleanupTimer = undefined;
+    }
+  }
+
+  private touchSession(sessionId: string): void {
+    const entry = this.sessions.get(sessionId);
+    if (entry) {
+      entry.lastActivity = Date.now();
+    }
   }
 
   async start(port: number = DEFAULT_PORT): Promise<void> {
@@ -102,13 +139,14 @@ export class DebugMcpServer {
         return;
       } else if (url.pathname === "/health") {
         res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ status: "ok", name: EXTENSION_ID }));
+        res.end(JSON.stringify({ status: "ok", name: EXTENSION_ID, sessions: this.sessions.size }));
       } else {
         res.writeHead(404, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ error: "not_found" }));
       }
     });
 
+    this.startCleanupTimer();
     await this.listenOnPort(port);
   }
 
@@ -118,9 +156,28 @@ export class DebugMcpServer {
   ): Promise<void> {
     const sessionId = req.headers["mcp-session-id"] as string | undefined;
 
+    // Existing session — delegate to its transport
     if (sessionId && this.sessions.has(sessionId)) {
-      // Existing session — delegate to its transport
+      this.touchSession(sessionId);
+      // Handle DELETE for graceful session termination
+      if (req.method === "DELETE") {
+        await this.closeSession(sessionId);
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ status: "session_closed" }));
+        return;
+      }
       await this.sessions.get(sessionId)!.transport.handleRequest(req, res);
+      return;
+    }
+
+    // DELETE for unknown session — nothing to do
+    if (req.method === "DELETE") {
+      res.writeHead(404, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({
+        jsonrpc: "2.0",
+        error: { code: -32000, message: "Session not found." },
+        id: null,
+      }));
       return;
     }
 
@@ -138,19 +195,30 @@ export class DebugMcpServer {
       }
     }
 
-    // Invalid request
-    res.writeHead(400, { "Content-Type": "application/json" });
+    // Non-initialize request with stale/missing session → 404 (signals client to reinitialize)
+    const statusCode = sessionId ? 404 : 400;
+    const message = sessionId
+      ? "Session expired or unknown. Send a new initialize request."
+      : "Bad Request: No valid session. Send an initialize request first.";
+    res.writeHead(statusCode, { "Content-Type": "application/json" });
     res.end(
       JSON.stringify({
         jsonrpc: "2.0",
-        error: {
-          code: -32000,
-          message:
-            "Bad Request: No valid session. Send an initialize request first.",
-        },
+        error: { code: -32000, message },
         id: null,
       }),
     );
+  }
+
+  private async closeSession(sessionId: string): Promise<void> {
+    const entry = this.sessions.get(sessionId);
+    if (entry) {
+      console.log(`[DebugPilot] Closing session ${sessionId}`);
+      entry.notificationManager?.dispose();
+      await entry.transport.close();
+      await entry.server.close();
+      this.sessions.delete(sessionId);
+    }
   }
 
   private async listenOnPort(port: number): Promise<void> {
@@ -206,6 +274,7 @@ export class DebugMcpServer {
   }
 
   async stop(): Promise<void> {
+    this.stopCleanupTimer();
     for (const [, entry] of this.sessions) {
       entry.notificationManager?.dispose();
       await entry.transport.close();
