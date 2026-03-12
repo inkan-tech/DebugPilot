@@ -4,6 +4,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import type { IDebugAdapter } from "./types.js";
 import { registerAllTools } from "./tools/index.js";
+import { registerAllResources } from "./resources/index.js";
+import { registerAllPrompts } from "./prompts/index.js";
 import { EXTENSION_ID } from "./constants.js";
 
 const DEFAULT_PORT = 45853;
@@ -21,6 +23,8 @@ export class DebugMcpServer {
     });
 
     registerAllTools(this.server, this.adapter);
+    registerAllResources(this.server, this.adapter);
+    registerAllPrompts(this.server, this.adapter);
   }
 
   get port(): number {
