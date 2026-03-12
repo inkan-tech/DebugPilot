@@ -1,116 +1,89 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#080818"/>
-      <stop offset="50%" stop-color="#0d0d2a"/>
-      <stop offset="100%" stop-color="#1a0a30"/>
+    <linearGradient id="sf" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3b9eff"/>
+      <stop offset="100%" stop-color="#1a6de0"/>
     </linearGradient>
-    <linearGradient id="cp" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#00d2ff"/>
-      <stop offset="100%" stop-color="#9b30ff"/>
+    <linearGradient id="sb" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a3660"/>
+      <stop offset="100%" stop-color="#0f2340"/>
     </linearGradient>
-    <linearGradient id="cpV" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#00d2ff"/>
-      <stop offset="100%" stop-color="#9b30ff"/>
+    <linearGradient id="wl" x1="1" y1="0" x2="0" y2="0">
+      <stop offset="0%" stop-color="#40c8ff"/>
+      <stop offset="100%" stop-color="#80e0ff"/>
     </linearGradient>
-    <linearGradient id="hg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#1a8aaa"/>
-      <stop offset="50%" stop-color="#2a2a50"/>
-      <stop offset="100%" stop-color="#6a2aaa"/>
+    <linearGradient id="wr" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#40c8ff"/>
+      <stop offset="100%" stop-color="#80e0ff"/>
     </linearGradient>
-    <linearGradient id="gf" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#0a3050"/>
-      <stop offset="100%" stop-color="#200a50"/>
+    <linearGradient id="eye" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#20d0c0"/>
+      <stop offset="100%" stop-color="#0ea898"/>
     </linearGradient>
-    <linearGradient id="wL" x1="1" y1="0" x2="0" y2="0">
-      <stop offset="0%" stop-color="#00d2ff"/>
-      <stop offset="100%" stop-color="#00d2ff" stop-opacity="0.2"/>
+    <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#40c8ff"/>
+      <stop offset="100%" stop-color="#1a6de0"/>
     </linearGradient>
-    <linearGradient id="wR" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#9b30ff"/>
-      <stop offset="100%" stop-color="#9b30ff" stop-opacity="0.2"/>
-    </linearGradient>
-    <filter id="gc">
-      <feDropShadow dx="0" dy="0" stdDeviation="2" flood-color="#00d2ff" flood-opacity="0.4"/>
-    </filter>
-    <filter id="gp">
-      <feDropShadow dx="0" dy="0" stdDeviation="2" flood-color="#9b30ff" flood-opacity="0.4"/>
-    </filter>
   </defs>
 
-  <!-- Background -->
-  <rect width="128" height="128" rx="24" fill="url(#bg)"/>
-
-  <!-- Inner frame -->
-  <rect x="14" y="16" width="100" height="96" rx="8" fill="none" stroke="url(#cp)" stroke-width="0.6" stroke-opacity="0.25"/>
-
-  <!-- Corner brackets -->
-  <g stroke="#00d2ff" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.5">
-    <path d="M20,24 L16,24 L16,34"/>
-    <path d="M20,94 L16,94 L16,84"/>
+  <!-- Wings -->
+  <g>
+    <path d="M6,42 L52,42 L52,48 L10,48 Z" fill="url(#wl)" stroke="#1a3660" stroke-width="0.8"/>
+    <path d="M12,51 L52,51 L52,57 L16,57 Z" fill="url(#wl)" stroke="#1a3660" stroke-width="0.8"/>
+    <path d="M18,60 L52,60 L52,66 L21,66 Z" fill="url(#wl)" stroke="#1a3660" stroke-width="0.8"/>
   </g>
-  <g stroke="#9b30ff" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.5">
-    <path d="M108,24 L112,24 L112,34"/>
-    <path d="M108,94 L112,94 L112,84"/>
+  <g>
+    <path d="M122,42 L76,42 L76,48 L118,48 Z" fill="url(#wr)" stroke="#1a3660" stroke-width="0.8"/>
+    <path d="M116,51 L76,51 L76,57 L112,57 Z" fill="url(#wr)" stroke="#1a3660" stroke-width="0.8"/>
+    <path d="M110,60 L76,60 L76,66 L107,66 Z" fill="url(#wr)" stroke="#1a3660" stroke-width="0.8"/>
   </g>
 
-  <!-- Circle -->
-  <circle cx="64" cy="56" r="34" fill="none" stroke="url(#cp)" stroke-width="1.2" opacity="0.65"/>
-
-  <!-- Cardinal dots -->
-  <circle cx="64" cy="21" r="1.5" fill="#00d2ff"/>
-  <circle cx="64" cy="91" r="1.5" fill="#9b30ff"/>
-  <circle cx="29" cy="56" r="1.5" fill="#00d2ff"/>
-  <circle cx="99" cy="56" r="1.5" fill="#9b30ff"/>
-
-  <!-- ═══ 3-BAR WINGS — longest on top ═══ -->
-  <g filter="url(#gc)">
-    <rect x="8" y="53" width="36" height="3" rx="1.5" fill="url(#wL)" opacity="0.9"/>
-    <rect x="13" y="58" width="31" height="3" rx="1.5" fill="url(#wL)" opacity="0.7"/>
-    <rect x="18" y="63" width="26" height="3" rx="1.5" fill="url(#wL)" opacity="0.5"/>
-  </g>
-  <g filter="url(#gp)">
-    <rect x="84" y="53" width="36" height="3" rx="1.5" fill="url(#wR)" opacity="0.9"/>
-    <rect x="84" y="58" width="31" height="3" rx="1.5" fill="url(#wR)" opacity="0.7"/>
-    <rect x="84" y="63" width="26" height="3" rx="1.5" fill="url(#wR)" opacity="0.5"/>
+  <!-- Brackets -->
+  <g stroke="#40c8ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <polyline points="8,48 2,54 8,60"/>
+    <polyline points="120,48 126,54 120,60"/>
   </g>
 
-  <!-- ═══ HELMET ═══ -->
-  <path d="M44,65 C44,40 52,28 64,24 C76,28 84,40 84,65 Z"
-        fill="url(#hg)" stroke="url(#cp)" stroke-width="0.5" stroke-opacity="0.25" opacity="0.85"/>
+  <!-- Shield -->
+  <path d="M40,16 L88,16 Q92,16 92,20 L92,72 Q92,92 64,105 Q36,92 36,72 L36,20 Q36,16 40,16 Z" fill="url(#sb)"/>
+  <path d="M43,19 L85,19 Q88,19 88,22 L88,70 Q88,88 64,100 Q40,88 40,70 L40,22 Q40,19 43,19 Z" fill="url(#sf)"/>
 
-  <!-- Antenna -->
-  <line x1="64" y1="21" x2="64" y2="30" stroke="url(#cpV)" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Bug antennae -->
+  <path d="M58,38 Q54,28 50,24" fill="none" stroke="#1a3660" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="49" cy="23" r="2.5" fill="url(#cg)"/>
+  <path d="M70,38 Q74,28 78,24" fill="none" stroke="#1a3660" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="79" cy="23" r="2.5" fill="url(#cg)"/>
 
-  <!-- Neural mesh -->
-  <g stroke="url(#cp)" stroke-width="0.4" fill="none" opacity="0.25">
-    <line x1="57" y1="36" x2="64" y2="32"/>
-    <line x1="64" y1="32" x2="71" y2="36"/>
-    <line x1="57" y1="36" x2="61" y2="42"/>
-    <line x1="71" y1="36" x2="67" y2="42"/>
-    <line x1="61" y1="42" x2="67" y2="42"/>
-    <line x1="64" y1="32" x2="64" y2="40"/>
+  <!-- Bug head -->
+  <ellipse cx="64" cy="42" rx="12" ry="9" fill="#1a3660" stroke="#0f2340" stroke-width="1"/>
+
+  <!-- Bug eyes -->
+  <circle cx="59" cy="41" r="4.5" fill="url(#eye)" stroke="#0f2340" stroke-width="1"/>
+  <circle cx="69" cy="41" r="4.5" fill="url(#eye)" stroke="#0f2340" stroke-width="1"/>
+  <circle cx="57.5" cy="39.5" r="1.5" fill="#ffffff" opacity="0.5"/>
+  <circle cx="67.5" cy="39.5" r="1.5" fill="#ffffff" opacity="0.5"/>
+
+  <!-- Bug body -->
+  <ellipse cx="64" cy="68" rx="20" ry="25" fill="url(#sf)" stroke="#1a3660" stroke-width="1.2"/>
+
+  <!-- Wing split -->
+  <line x1="64" y1="44" x2="64" y2="92" stroke="#1a3660" stroke-width="1.2" stroke-linecap="round"/>
+
+  <!-- Wing veins -->
+  <path d="M52,58 Q58,62 62,60" fill="none" stroke="#1a6de0" stroke-width="0.7" opacity="0.4"/>
+  <path d="M76,58 Q70,62 66,60" fill="none" stroke="#1a6de0" stroke-width="0.7" opacity="0.4"/>
+
+  <!-- Circuit dots -->
+  <circle cx="55" cy="65" r="1.5" fill="#40c8ff" opacity="0.5"/>
+  <circle cx="73" cy="65" r="1.5" fill="#40c8ff" opacity="0.5"/>
+
+  <!-- Bug legs -->
+  <g stroke="#1a3660" stroke-width="1.2" stroke-linecap="round" fill="none">
+    <path d="M45,56 L38,50 L35,52"/>
+    <path d="M44,67 L36,67 L34,70"/>
+    <path d="M46,78 L39,82 L37,80"/>
+    <path d="M83,56 L90,50 L93,52"/>
+    <path d="M84,67 L92,67 L94,70"/>
+    <path d="M82,78 L89,82 L91,80"/>
   </g>
-  <g fill="url(#cp)" opacity="0.35">
-    <circle cx="64" cy="32" r="1"/>
-    <circle cx="57" cy="36" r="0.8"/>
-    <circle cx="71" cy="36" r="0.8"/>
-    <circle cx="61" cy="42" r="0.8"/>
-    <circle cx="67" cy="42" r="0.8"/>
-  </g>
-
-  <!-- ═══ MODERN VR GOGGLES ═══ -->
-  <path d="M40,53 Q40,46 46,45 L82,45 Q88,46 88,53 Q88,60 82,62 L46,62 Q40,60 40,53 Z"
-        fill="url(#gf)" stroke="url(#cp)" stroke-width="0.8" stroke-opacity="0.5"/>
-  <path d="M42,53 Q42,47 47,46.5 L81,46.5 Q86,47 86,53 Q86,59 81,60 L47,60 Q42,59 42,53 Z"
-        fill="#060618" opacity="0.5"/>
-  <line x1="64" y1="46.5" x2="64" y2="60" stroke="#2a2a4c" stroke-width="0.6" opacity="0.35"/>
-  <!-- Side vents -->
-  <line x1="39" y1="51" x2="36" y2="50.5" stroke="#00d2ff" stroke-width="0.8" stroke-linecap="round" opacity="0.3"/>
-  <line x1="39" y1="55" x2="36" y2="55.5" stroke="#00d2ff" stroke-width="0.8" stroke-linecap="round" opacity="0.3"/>
-  <line x1="89" y1="51" x2="92" y2="50.5" stroke="#9b30ff" stroke-width="0.8" stroke-linecap="round" opacity="0.3"/>
-  <line x1="89" y1="55" x2="92" y2="55.5" stroke="#9b30ff" stroke-width="0.8" stroke-linecap="round" opacity="0.3"/>
-
-  <!-- ═══ CHIN V-shape ═══ -->
-  <path d="M52,65 L64,74 L76,65" fill="none" stroke="url(#cp)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/>
 </svg>

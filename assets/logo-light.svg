@@ -73,64 +73,59 @@
   <path d="M225,118 L375,118 Q382,118 382,125 L382,272 Q382,324 300,356 Q218,324 218,272 L218,125 Q218,118 225,118 Z"
         fill="none" stroke="#ffffff" stroke-width="2.5" stroke-opacity="0.5"/>
 
-  <!-- ═══ BUG — stylized debug beetle ═══ -->
+  <!-- ═══ MODERN PILOT HELMET ═══ -->
+  <!-- Helmet dome — sleek, smooth shape -->
+  <path d="M245,268 C245,188 262,152 300,140 C338,152 355,188 355,268 Q355,278 345,280 L255,280 Q245,278 245,268 Z"
+        fill="url(#helmetGrad)" stroke="#b0bcc8" stroke-width="2"/>
+  <!-- Helmet side panels -->
+  <path d="M245,230 C245,195 258,165 278,155 L278,180 L245,230 Z" fill="url(#helmetSide)" opacity="0.5"/>
+  <path d="M355,230 C355,195 342,165 322,155 L322,180 L355,230 Z" fill="url(#helmetSide)" opacity="0.5"/>
+  <!-- Helmet ridge line -->
+  <path d="M278,152 Q300,142 322,152" fill="none" stroke="#b0bcc8" stroke-width="2" stroke-linecap="round"/>
+  <line x1="300" y1="140" x2="300" y2="165" stroke="#c0ccd8" stroke-width="2" stroke-linecap="round"/>
 
-  <!-- Bug antennae — curved, expressive -->
-  <path d="M280,165 Q270,135 258,125" fill="none" stroke="#1a3660" stroke-width="3" stroke-linecap="round"/>
-  <circle cx="255" cy="122" r="5" fill="url(#circuitGrad)"/>
-  <path d="M320,165 Q330,135 342,125" fill="none" stroke="#1a3660" stroke-width="3" stroke-linecap="round"/>
-  <circle cx="345" cy="122" r="5" fill="url(#circuitGrad)"/>
+  <!-- ═══ ANTENNAS — thin, modern sensor style ═══ -->
+  <line x1="284" y1="165" x2="278" y2="130" stroke="#1a3660" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="278" cy="127" r="3.5" fill="url(#circuitGrad)"/>
+  <line x1="316" y1="165" x2="322" y2="137" stroke="#1a3660" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="322" cy="134" r="3.5" fill="url(#circuitGrad)"/>
 
-  <!-- Bug head -->
-  <ellipse cx="300" cy="172" rx="28" ry="22" fill="#1a3660" stroke="#0f2340" stroke-width="2"/>
+  <!-- Circuit trace between antennas -->
+  <path d="M282,158 L295,162 L300,158 L305,162 L318,158" fill="none" stroke="#1a3660" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="300" cy="158" r="2.5" fill="#1a3660"/>
+  <!-- Extra circuit nodes on dome -->
+  <circle cx="288" cy="175" r="1.8" fill="#40c8ff" opacity="0.5"/>
+  <circle cx="312" cy="175" r="1.8" fill="#40c8ff" opacity="0.5"/>
+  <line x1="288" y1="175" x2="300" y2="170" stroke="#40c8ff" stroke-width="0.8" opacity="0.35"/>
+  <line x1="312" y1="175" x2="300" y2="170" stroke="#40c8ff" stroke-width="0.8" opacity="0.35"/>
+  <circle cx="300" cy="170" r="1.5" fill="#40c8ff" opacity="0.4"/>
 
-  <!-- Bug eyes — large, expressive, teal -->
-  <circle cx="285" cy="170" r="11" fill="url(#visorGrad)" stroke="#0f2340" stroke-width="2"/>
-  <circle cx="315" cy="170" r="11" fill="url(#visorGrad)" stroke="#0f2340" stroke-width="2"/>
-  <!-- Eye glare -->
-  <circle cx="281" cy="166" r="4" fill="#ffffff" opacity="0.5"/>
-  <circle cx="311" cy="166" r="4" fill="#ffffff" opacity="0.5"/>
+  <!-- ═══ WIDE VISOR — modern wraparound ═══ -->
+  <!-- Visor frame -->
+  <path d="M244,218 Q244,196 262,193 L338,193 Q356,196 356,218 Q356,244 338,248 L262,248 Q244,244 244,218 Z"
+        fill="#1a3660" stroke="#0f2340" stroke-width="2.5"/>
 
-  <!-- Bug body — rounded shield shape -->
-  <ellipse cx="300" cy="240" rx="55" ry="65" fill="url(#shieldFill)" stroke="#1a3660" stroke-width="2.5"/>
+  <!-- Visor glass — single wide band -->
+  <path d="M252,218 Q252,202 266,200 L334,200 Q348,202 348,218 Q348,238 334,240 L266,240 Q252,238 252,218 Z"
+        fill="url(#visorGrad)" stroke="#0f2340" stroke-width="1.5"/>
 
-  <!-- Wing split line down the center -->
-  <line x1="300" y1="178" x2="300" y2="302" stroke="#1a3660" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Visor reflections -->
+  <path d="M262,205 Q280,202 310,205" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.45"/>
+  <path d="M270,210 Q290,208 320,211" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" opacity="0.25"/>
 
-  <!-- Wing detail lines -->
-  <path d="M265,210 Q280,220 295,215" fill="none" stroke="#1a6de0" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
-  <path d="M335,210 Q320,220 305,215" fill="none" stroke="#1a6de0" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
-  <path d="M260,240 Q280,252 295,245" fill="none" stroke="#1a6de0" stroke-width="1.5" stroke-linecap="round" opacity="0.35"/>
-  <path d="M340,240 Q320,252 305,245" fill="none" stroke="#1a6de0" stroke-width="1.5" stroke-linecap="round" opacity="0.35"/>
+  <!-- Visor side vents -->
+  <line x1="248" y1="210" x2="240" y2="208" stroke="#0f2340" stroke-width="2" stroke-linecap="round"/>
+  <line x1="248" y1="218" x2="240" y2="218" stroke="#0f2340" stroke-width="2" stroke-linecap="round"/>
+  <line x1="248" y1="226" x2="240" y2="228" stroke="#0f2340" stroke-width="2" stroke-linecap="round"/>
+  <line x1="352" y1="210" x2="360" y2="208" stroke="#0f2340" stroke-width="2" stroke-linecap="round"/>
+  <line x1="352" y1="218" x2="360" y2="218" stroke="#0f2340" stroke-width="2" stroke-linecap="round"/>
+  <line x1="352" y1="226" x2="360" y2="228" stroke="#0f2340" stroke-width="2" stroke-linecap="round"/>
 
-  <!-- Circuit dots on wings -->
-  <circle cx="275" cy="220" r="3" fill="#40c8ff" opacity="0.5"/>
-  <circle cx="325" cy="220" r="3" fill="#40c8ff" opacity="0.5"/>
-  <circle cx="270" cy="250" r="2.5" fill="#40c8ff" opacity="0.4"/>
-  <circle cx="330" cy="250" r="2.5" fill="#40c8ff" opacity="0.4"/>
-  <circle cx="280" cy="270" r="2" fill="#40c8ff" opacity="0.3"/>
-  <circle cx="320" cy="270" r="2" fill="#40c8ff" opacity="0.3"/>
-
-  <!-- Bug legs — 3 pairs, angled out -->
-  <g stroke="#1a3660" stroke-width="2.5" stroke-linecap="round" fill="none">
-    <!-- Left legs -->
-    <path d="M248,205 L228,190 L218,195"/>
-    <path d="M245,238 L222,238 L215,245"/>
-    <path d="M250,268 L232,280 L225,275"/>
-    <!-- Right legs -->
-    <path d="M352,205 L372,190 L382,195"/>
-    <path d="M355,238 L378,238 L385,245"/>
-    <path d="M350,268 L368,280 L375,275"/>
-  </g>
-  <!-- Leg joint dots -->
-  <g fill="#1a3660">
-    <circle cx="228" cy="190" r="2.5"/>
-    <circle cx="222" cy="238" r="2.5"/>
-    <circle cx="232" cy="280" r="2.5"/>
-    <circle cx="372" cy="190" r="2.5"/>
-    <circle cx="378" cy="238" r="2.5"/>
-    <circle cx="368" cy="280" r="2.5"/>
-  </g>
+  <!-- ═══ CHIN — streamlined V-shape ═══ -->
+  <path d="M262,248 L258,262 Q258,272 268,276 L300,290 L332,276 Q342,272 342,262 L338,248"
+        fill="url(#helmetSide)" stroke="#b0bcc8" stroke-width="1.5" opacity="0.7"/>
+  <!-- Chin center line -->
+  <line x1="300" y1="252" x2="300" y2="285" stroke="#c0ccd8" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
 
   <!-- ═══ STARS ═══ -->
   <g fill="#40d8c0">
