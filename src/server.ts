@@ -2,6 +2,7 @@ import * as http from "node:http";
 import { randomUUID } from "node:crypto";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
+import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
 import type { IDebugAdapter } from "./types.js";
 import type { SessionManager } from "./session-manager.js";
 import { registerAllTools } from "./tools/index.js";
@@ -12,44 +13,64 @@ import { EXTENSION_ID } from "./constants.js";
 
 const DEFAULT_PORT = 45853;
 
+interface SessionEntry {
+  server: McpServer;
+  transport: StreamableHTTPServerTransport;
+  notificationManager?: NotificationManager;
+}
+
 export class DebugMcpServer {
-  private server: McpServer;
   private httpServer: http.Server | undefined;
-  private transport: StreamableHTTPServerTransport | undefined;
-  private notificationManager: NotificationManager | undefined;
+  private sessions = new Map<string, SessionEntry>();
   private _port: number = DEFAULT_PORT;
 
   constructor(
     private readonly adapter: IDebugAdapter,
     private readonly sessionManager?: SessionManager,
-  ) {
-    this.server = new McpServer({
-      name: EXTENSION_ID,
-      version: "0.7.0",
-    });
-
-    registerAllTools(this.server, this.adapter);
-    registerAllResources(this.server, this.adapter);
-    registerAllPrompts(this.server, this.adapter);
-
-    if (this.sessionManager) {
-      this.notificationManager = new NotificationManager(
-        this.server.server,
-        this.sessionManager,
-      );
-    }
-  }
+  ) {}
 
   get port(): number {
     return this._port;
   }
 
-  async start(port: number = DEFAULT_PORT): Promise<void> {
-    this.transport = new StreamableHTTPServerTransport({
-      sessionIdGenerator: () => randomUUID(),
+  private createSession(): { server: McpServer; transport: StreamableHTTPServerTransport; notificationManager?: NotificationManager } {
+    const server = new McpServer({
+      name: EXTENSION_ID,
+      version: "0.7.0",
     });
-    await this.server.connect(this.transport);
 
+    registerAllTools(server, this.adapter);
+    registerAllResources(server, this.adapter);
+    registerAllPrompts(server, this.adapter);
+
+    let notificationManager: NotificationManager | undefined;
+    if (this.sessionManager) {
+      notificationManager = new NotificationManager(
+        server.server,
+        this.sessionManager,
+      );
+    }
+
+    const transport = new StreamableHTTPServerTransport({
+      sessionIdGenerator: () => randomUUID(),
+      onsessioninitialized: (sessionId: string) => {
+        this.sessions.set(sessionId, { server, transport, notificationManager });
+      },
+    });
+
+    transport.onclose = () => {
+      const sid = transport.sessionId;
+      if (sid) {
+        const entry = this.sessions.get(sid);
+        entry?.notificationManager?.dispose();
+        this.sessions.delete(sid);
+      }
+    };
+
+    return { server, transport, notificationManager };
+  }
+
+  async start(port: number = DEFAULT_PORT): Promise<void> {
     this.httpServer = http.createServer(async (req, res) => {
       console.log(`[DebugPilot] ${req.method} ${req.url}`);
 
@@ -73,7 +94,7 @@ export class DebugMcpServer {
       const url = new URL(req.url ?? "/", `http://localhost:${this._port}`);
 
       if (url.pathname === "/mcp") {
-        await this.transport!.handleRequest(req, res);
+        await this.handleMcpRequest(req, res);
       } else if (url.pathname === "/shutdown" && req.method === "POST") {
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ status: "shutting_down" }));
@@ -89,6 +110,44 @@ export class DebugMcpServer {
     });
 
     await this.listenOnPort(port);
+  }
+
+  private async handleMcpRequest(
+    req: http.IncomingMessage,
+    res: http.ServerResponse,
+  ): Promise<void> {
+    const sessionId = req.headers["mcp-session-id"] as string | undefined;
+
+    if (sessionId && this.sessions.has(sessionId)) {
+      // Existing session — delegate to its transport
+      await this.sessions.get(sessionId)!.transport.handleRequest(req, res);
+      return;
+    }
+
+    // No session ID — must be an initialize request
+    if (!sessionId && req.method === "POST") {
+      const body = await readBody(req);
+      if (isInitializeRequest(body)) {
+        const { server, transport } = this.createSession();
+        await server.connect(transport);
+        await transport.handleRequest(req, res, body);
+        return;
+      }
+    }
+
+    // Invalid request
+    res.writeHead(400, { "Content-Type": "application/json" });
+    res.end(
+      JSON.stringify({
+        jsonrpc: "2.0",
+        error: {
+          code: -32000,
+          message:
+            "Bad Request: No valid session. Send an initialize request first.",
+        },
+        id: null,
+      }),
+    );
   }
 
   private async listenOnPort(port: number): Promise<void> {
@@ -144,11 +203,12 @@ export class DebugMcpServer {
   }
 
   async stop(): Promise<void> {
-    this.notificationManager?.dispose();
-    this.notificationManager = undefined;
-    await this.transport?.close();
-    this.transport = undefined;
-    await this.server.close();
+    for (const [, entry] of this.sessions) {
+      entry.notificationManager?.dispose();
+      await entry.transport.close();
+      await entry.server.close();
+    }
+    this.sessions.clear();
     if (this.httpServer) {
       await new Promise<void>((resolve) => {
         this.httpServer!.close(() => resolve());
@@ -156,4 +216,19 @@ export class DebugMcpServer {
       this.httpServer = undefined;
     }
   }
+}
+
+function readBody(req: http.IncomingMessage): Promise<unknown> {
+  return new Promise((resolve, reject) => {
+    let data = "";
+    req.on("data", (chunk: Buffer) => { data += chunk; });
+    req.on("end", () => {
+      try {
+        resolve(JSON.parse(data));
+      } catch (err) {
+        reject(err);
+      }
+    });
+    req.on("error", reject);
+  });
 }
