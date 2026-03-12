@@ -6,6 +6,12 @@
 
 <p align="center"><strong>Give your AI agent eyes into the debugger.</strong></p>
 
+<p align="center">
+  <a href="https://marketplace.visualstudio.com/items?itemName=inkan-link.debugpilot"><img src="https://img.shields.io/visual-studio-marketplace/v/inkan-link.debugpilot" alt="Version"></a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=inkan-link.debugpilot"><img src="https://img.shields.io/visual-studio-marketplace/i/inkan-link.debugpilot" alt="Installs"></a>
+  <a href="https://github.com/inkan-tech/DebugPilot/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue" alt="License"></a>
+</p>
+
 DebugPilot is a VS Code extension that exposes the Debug Adapter Protocol (DAP) as an MCP server. Any MCP-compatible AI agent — Claude Code, Cursor, Cline, Continue.dev, Aider — can inspect debug state, control execution, and set breakpoints without manual copy-paste.
 
 ## Features
@@ -70,7 +76,15 @@ Or add manually to your project `.mcp.json`:
 }
 ```
 
-#### Cursor / Other MCP clients
+#### Cursor
+
+Add a `.cursor/mcp.json` to your project root (see [`examples/mcp-cursor.json`](examples/mcp-cursor.json)):
+
+```json
+{ "mcpServers": { "debugpilot": { "url": "http://127.0.0.1:45853/mcp" } } }
+```
+
+#### Other MCP clients
 
 Point to the same URL. Any client supporting MCP Streamable HTTP will work.
 
