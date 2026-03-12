@@ -1,38 +1,116 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#1a1a2e"/>
-      <stop offset="100%" stop-color="#16213e"/>
+      <stop offset="0%" stop-color="#080818"/>
+      <stop offset="50%" stop-color="#0d0d2a"/>
+      <stop offset="100%" stop-color="#1a0a30"/>
     </linearGradient>
-    <linearGradient id="accent" x1="0" y1="0" x2="0" y2="1">
+    <linearGradient id="cp" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0%" stop-color="#00d2ff"/>
-      <stop offset="100%" stop-color="#7b2ff7"/>
+      <stop offset="100%" stop-color="#9b30ff"/>
     </linearGradient>
+    <linearGradient id="cpV" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#00d2ff"/>
+      <stop offset="100%" stop-color="#9b30ff"/>
+    </linearGradient>
+    <linearGradient id="hg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a8aaa"/>
+      <stop offset="50%" stop-color="#2a2a50"/>
+      <stop offset="100%" stop-color="#6a2aaa"/>
+    </linearGradient>
+    <linearGradient id="gf" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0a3050"/>
+      <stop offset="100%" stop-color="#200a50"/>
+    </linearGradient>
+    <linearGradient id="wL" x1="1" y1="0" x2="0" y2="0">
+      <stop offset="0%" stop-color="#00d2ff"/>
+      <stop offset="100%" stop-color="#00d2ff" stop-opacity="0.2"/>
+    </linearGradient>
+    <linearGradient id="wR" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#9b30ff"/>
+      <stop offset="100%" stop-color="#9b30ff" stop-opacity="0.2"/>
+    </linearGradient>
+    <filter id="gc">
+      <feDropShadow dx="0" dy="0" stdDeviation="2" flood-color="#00d2ff" flood-opacity="0.4"/>
+    </filter>
+    <filter id="gp">
+      <feDropShadow dx="0" dy="0" stdDeviation="2" flood-color="#9b30ff" flood-opacity="0.4"/>
+    </filter>
   </defs>
 
   <!-- Background -->
   <rect width="128" height="128" rx="24" fill="url(#bg)"/>
 
-  <!-- Compass ring -->
-  <circle cx="64" cy="64" r="38" fill="none" stroke="url(#accent)" stroke-width="2.5" stroke-opacity="0.5"/>
-  <circle cx="64" cy="64" r="38" fill="none" stroke="url(#accent)" stroke-width="1.5" stroke-dasharray="4 3" stroke-opacity="0.4"/>
+  <!-- Inner frame -->
+  <rect x="14" y="16" width="100" height="96" rx="8" fill="none" stroke="url(#cp)" stroke-width="0.6" stroke-opacity="0.25"/>
 
-  <!-- Tick marks -->
-  <line x1="64" y1="22" x2="64" y2="28" stroke="#00d2ff" stroke-width="2" stroke-linecap="round"/>
-  <line x1="64" y1="100" x2="64" y2="106" stroke="#00d2ff" stroke-width="2" stroke-linecap="round"/>
-  <line x1="22" y1="64" x2="28" y2="64" stroke="#00d2ff" stroke-width="2" stroke-linecap="round"/>
-  <line x1="100" y1="64" x2="106" y2="64" stroke="#00d2ff" stroke-width="2" stroke-linecap="round"/>
-
-  <!-- Breakpoint center -->
-  <circle cx="64" cy="64" r="12" fill="#e74856"/>
-  <circle cx="64" cy="64" r="12" fill="none" stroke="#ff6b7a" stroke-width="1" stroke-opacity="0.5"/>
-  <!-- Pause bars -->
-  <rect x="60" y="58" width="3" height="12" rx="1" fill="#1a1a2e"/>
-  <rect x="65" y="58" width="3" height="12" rx="1" fill="#1a1a2e"/>
-
-  <!-- Compass needle -->
-  <g transform="translate(64, 64) rotate(-45)">
-    <polygon points="0,-34 -5,-16 0,-20 5,-16" fill="url(#accent)" opacity="0.9"/>
-    <polygon points="0,34 -5,16 0,20 5,16" fill="#3a3a5c" opacity="0.5"/>
+  <!-- Corner brackets -->
+  <g stroke="#00d2ff" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.5">
+    <path d="M20,24 L16,24 L16,34"/>
+    <path d="M20,94 L16,94 L16,84"/>
   </g>
+  <g stroke="#9b30ff" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.5">
+    <path d="M108,24 L112,24 L112,34"/>
+    <path d="M108,94 L112,94 L112,84"/>
+  </g>
+
+  <!-- Circle -->
+  <circle cx="64" cy="56" r="34" fill="none" stroke="url(#cp)" stroke-width="1.2" opacity="0.65"/>
+
+  <!-- Cardinal dots -->
+  <circle cx="64" cy="21" r="1.5" fill="#00d2ff"/>
+  <circle cx="64" cy="91" r="1.5" fill="#9b30ff"/>
+  <circle cx="29" cy="56" r="1.5" fill="#00d2ff"/>
+  <circle cx="99" cy="56" r="1.5" fill="#9b30ff"/>
+
+  <!-- ═══ 3-BAR WINGS — longest on top ═══ -->
+  <g filter="url(#gc)">
+    <rect x="8" y="53" width="36" height="3" rx="1.5" fill="url(#wL)" opacity="0.9"/>
+    <rect x="13" y="58" width="31" height="3" rx="1.5" fill="url(#wL)" opacity="0.7"/>
+    <rect x="18" y="63" width="26" height="3" rx="1.5" fill="url(#wL)" opacity="0.5"/>
+  </g>
+  <g filter="url(#gp)">
+    <rect x="84" y="53" width="36" height="3" rx="1.5" fill="url(#wR)" opacity="0.9"/>
+    <rect x="84" y="58" width="31" height="3" rx="1.5" fill="url(#wR)" opacity="0.7"/>
+    <rect x="84" y="63" width="26" height="3" rx="1.5" fill="url(#wR)" opacity="0.5"/>
+  </g>
+
+  <!-- ═══ HELMET ═══ -->
+  <path d="M44,65 C44,40 52,28 64,24 C76,28 84,40 84,65 Z"
+        fill="url(#hg)" stroke="url(#cp)" stroke-width="0.5" stroke-opacity="0.25" opacity="0.85"/>
+
+  <!-- Antenna -->
+  <line x1="64" y1="21" x2="64" y2="30" stroke="url(#cpV)" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- Neural mesh -->
+  <g stroke="url(#cp)" stroke-width="0.4" fill="none" opacity="0.25">
+    <line x1="57" y1="36" x2="64" y2="32"/>
+    <line x1="64" y1="32" x2="71" y2="36"/>
+    <line x1="57" y1="36" x2="61" y2="42"/>
+    <line x1="71" y1="36" x2="67" y2="42"/>
+    <line x1="61" y1="42" x2="67" y2="42"/>
+    <line x1="64" y1="32" x2="64" y2="40"/>
+  </g>
+  <g fill="url(#cp)" opacity="0.35">
+    <circle cx="64" cy="32" r="1"/>
+    <circle cx="57" cy="36" r="0.8"/>
+    <circle cx="71" cy="36" r="0.8"/>
+    <circle cx="61" cy="42" r="0.8"/>
+    <circle cx="67" cy="42" r="0.8"/>
+  </g>
+
+  <!-- ═══ MODERN VR GOGGLES ═══ -->
+  <path d="M40,53 Q40,46 46,45 L82,45 Q88,46 88,53 Q88,60 82,62 L46,62 Q40,60 40,53 Z"
+        fill="url(#gf)" stroke="url(#cp)" stroke-width="0.8" stroke-opacity="0.5"/>
+  <path d="M42,53 Q42,47 47,46.5 L81,46.5 Q86,47 86,53 Q86,59 81,60 L47,60 Q42,59 42,53 Z"
+        fill="#060618" opacity="0.5"/>
+  <line x1="64" y1="46.5" x2="64" y2="60" stroke="#2a2a4c" stroke-width="0.6" opacity="0.35"/>
+  <!-- Side vents -->
+  <line x1="39" y1="51" x2="36" y2="50.5" stroke="#00d2ff" stroke-width="0.8" stroke-linecap="round" opacity="0.3"/>
+  <line x1="39" y1="55" x2="36" y2="55.5" stroke="#00d2ff" stroke-width="0.8" stroke-linecap="round" opacity="0.3"/>
+  <line x1="89" y1="51" x2="92" y2="50.5" stroke="#9b30ff" stroke-width="0.8" stroke-linecap="round" opacity="0.3"/>
+  <line x1="89" y1="55" x2="92" y2="55.5" stroke="#9b30ff" stroke-width="0.8" stroke-linecap="round" opacity="0.3"/>
+
+  <!-- ═══ CHIN V-shape ═══ -->
+  <path d="M52,65 L64,74 L76,65" fill="none" stroke="url(#cp)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/>
 </svg>

@@ -1,6 +1,10 @@
-# DebugPilot
+<p align="center">
+  <img src="assets/logo.png" alt="DebugPilot" width="320"/>
+</p>
 
-**Give your AI agent eyes into the debugger.**
+<h1 align="center">DebugPilot</h1>
+
+<p align="center"><strong>Give your AI agent eyes into the debugger.</strong></p>
 
 DebugPilot is a VS Code extension that exposes the Debug Adapter Protocol (DAP) as an MCP server. Any MCP-compatible AI agent — Claude Code, Cursor, Cline, Continue.dev, Aider — can inspect debug state, control execution, and set breakpoints without manual copy-paste.
 

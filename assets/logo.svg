@@ -1,66 +1,166 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#1a1a2e"/>
-      <stop offset="100%" stop-color="#16213e"/>
+      <stop offset="0%" stop-color="#080818"/>
+      <stop offset="50%" stop-color="#0d0d2a"/>
+      <stop offset="100%" stop-color="#1a0a30"/>
     </linearGradient>
-    <linearGradient id="accent" x1="0" y1="0" x2="0" y2="1">
+    <linearGradient id="cyanPurple" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0%" stop-color="#00d2ff"/>
-      <stop offset="100%" stop-color="#7b2ff7"/>
+      <stop offset="100%" stop-color="#9b30ff"/>
     </linearGradient>
-    <linearGradient id="glow" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#00d2ff" stop-opacity="0.8"/>
-      <stop offset="100%" stop-color="#7b2ff7" stop-opacity="0.4"/>
+    <linearGradient id="cyanPurpleV" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#00d2ff"/>
+      <stop offset="100%" stop-color="#9b30ff"/>
     </linearGradient>
-    <filter id="shadow">
-      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#00d2ff" flood-opacity="0.3"/>
+    <linearGradient id="helmetGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a8aaa"/>
+      <stop offset="50%" stop-color="#2a2a50"/>
+      <stop offset="100%" stop-color="#6a2aaa"/>
+    </linearGradient>
+    <linearGradient id="goggleFill" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0a3050"/>
+      <stop offset="100%" stop-color="#200a50"/>
+    </linearGradient>
+    <linearGradient id="wL" x1="1" y1="0" x2="0" y2="0">
+      <stop offset="0%" stop-color="#00d2ff"/>
+      <stop offset="100%" stop-color="#00d2ff" stop-opacity="0.2"/>
+    </linearGradient>
+    <linearGradient id="wR" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#9b30ff"/>
+      <stop offset="100%" stop-color="#9b30ff" stop-opacity="0.2"/>
+    </linearGradient>
+    <filter id="glowCyan">
+      <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#00d2ff" flood-opacity="0.5"/>
     </filter>
-    <filter id="innerGlow">
-      <feGaussianBlur stdDeviation="3" result="blur"/>
+    <filter id="glowPurple">
+      <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#9b30ff" flood-opacity="0.5"/>
+    </filter>
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
       <feComposite in="SourceGraphic" in2="blur" operator="over"/>
     </filter>
   </defs>
 
-  <!-- Background rounded square -->
-  <rect x="16" y="16" width="480" height="480" rx="96" fill="url(#bg)" filter="url(#shadow)"/>
-  <rect x="16" y="16" width="480" height="480" rx="96" fill="none" stroke="url(#accent)" stroke-width="2" stroke-opacity="0.3"/>
+  <!-- Background -->
+  <rect width="512" height="512" rx="90" fill="url(#bg)"/>
 
-  <!-- Compass / Navigation ring -->
-  <circle cx="256" cy="240" r="140" fill="none" stroke="url(#accent)" stroke-width="4" stroke-opacity="0.5"/>
-  <circle cx="256" cy="240" r="140" fill="none" stroke="url(#glow)" stroke-width="2" stroke-dasharray="12 8" stroke-opacity="0.6"/>
+  <!-- Inner rounded rectangle frame -->
+  <rect x="55" y="65" width="402" height="382" rx="32" fill="none" stroke="url(#cyanPurple)" stroke-width="1.8" stroke-opacity="0.3"/>
 
-  <!-- Cardinal tick marks -->
-  <line x1="256" y1="88" x2="256" y2="108" stroke="#00d2ff" stroke-width="3" stroke-linecap="round"/>
-  <line x1="256" y1="372" x2="256" y2="392" stroke="#00d2ff" stroke-width="3" stroke-linecap="round"/>
-  <line x1="104" y1="240" x2="124" y2="240" stroke="#00d2ff" stroke-width="3" stroke-linecap="round"/>
-  <line x1="388" y1="240" x2="408" y2="240" stroke="#00d2ff" stroke-width="3" stroke-linecap="round"/>
-
-  <!-- Breakpoint dot (red) — the "debug" element -->
-  <circle cx="256" cy="240" r="32" fill="#e74856" filter="url(#innerGlow)"/>
-  <circle cx="256" cy="240" r="32" fill="none" stroke="#ff6b7a" stroke-width="2" stroke-opacity="0.6"/>
-  <!-- Pause bars inside breakpoint -->
-  <rect x="245" y="224" width="6" height="32" rx="2" fill="#1a1a2e"/>
-  <rect x="261" y="224" width="6" height="32" rx="2" fill="#1a1a2e"/>
-
-  <!-- Navigator arrow / compass needle (pointing up-right = "piloting forward") -->
-  <g transform="translate(256, 240) rotate(-45)">
-    <!-- North needle -->
-    <polygon points="0,-120 -14,-60 0,-70 14,-60" fill="url(#accent)" opacity="0.9"/>
-    <!-- South needle -->
-    <polygon points="0,120 -14,60 0,70 14,60" fill="#3a3a5c" opacity="0.6"/>
+  <!-- Corner code brackets -->
+  <g stroke="#00d2ff" stroke-width="3.5" stroke-linecap="round" fill="none" opacity="0.65" filter="url(#glowCyan)">
+    <path d="M82,95 L68,95 L68,125"/>
+    <path d="M82,370 L68,370 L68,340"/>
+  </g>
+  <g stroke="#9b30ff" stroke-width="3.5" stroke-linecap="round" fill="none" opacity="0.65" filter="url(#glowPurple)">
+    <path d="M430,95 L444,95 L444,125"/>
+    <path d="M430,370 L444,370 L444,340"/>
   </g>
 
-  <!-- Small crosshair lines near center -->
-  <line x1="220" y1="240" x2="232" y2="240" stroke="#00d2ff" stroke-width="1.5" stroke-opacity="0.5"/>
-  <line x1="280" y1="240" x2="292" y2="240" stroke="#00d2ff" stroke-width="1.5" stroke-opacity="0.5"/>
-  <line x1="256" y1="204" x2="256" y2="216" stroke="#00d2ff" stroke-width="1.5" stroke-opacity="0.5"/>
-  <line x1="256" y1="264" x2="256" y2="276" stroke="#00d2ff" stroke-width="1.5" stroke-opacity="0.5"/>
+  <!-- Main circle -->
+  <circle cx="256" cy="230" r="130" fill="none" stroke="url(#cyanPurple)" stroke-width="3.5" opacity="0.75"/>
 
-  <!-- Code brackets "{ }" on sides -->
-  <text x="148" y="252" font-family="monospace" font-size="48" font-weight="bold" fill="#00d2ff" opacity="0.4" text-anchor="middle">{</text>
-  <text x="364" y="252" font-family="monospace" font-size="48" font-weight="bold" fill="#7b2ff7" opacity="0.4" text-anchor="middle">}</text>
+  <!-- Cardinal dots -->
+  <circle cx="256" cy="98" r="5" fill="#00d2ff" filter="url(#softGlow)"/>
+  <circle cx="256" cy="362" r="5" fill="#9b30ff" filter="url(#softGlow)"/>
+  <circle cx="124" cy="230" r="5" fill="#00d2ff" filter="url(#softGlow)"/>
+  <circle cx="388" cy="230" r="5" fill="#9b30ff" filter="url(#softGlow)"/>
 
-  <!-- "DebugPilot" text -->
-  <text x="256" y="440" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="44" font-weight="700" fill="white" text-anchor="middle" letter-spacing="2">Debug<tspan fill="url(#accent)">Pilot</tspan></text>
-  <text x="256" y="466" font-family="monospace" font-size="14" fill="#00d2ff" text-anchor="middle" opacity="0.6">MCP Debug Server for VS Code</text>
+  <!-- ═══ 3-BAR WINGS — longest on top ═══ -->
+  <!-- Left wing -->
+  <g filter="url(#glowCyan)">
+    <!-- Bar 1 (top, longest) -->
+    <rect x="42" y="218" width="138" height="10" rx="5" fill="url(#wL)" opacity="0.9"/>
+    <!-- Bar 2 (middle) -->
+    <rect x="62" y="234" width="118" height="10" rx="5" fill="url(#wL)" opacity="0.7"/>
+    <!-- Bar 3 (bottom, shortest) -->
+    <rect x="82" y="250" width="98" height="10" rx="5" fill="url(#wL)" opacity="0.5"/>
+  </g>
+
+  <!-- Right wing -->
+  <g filter="url(#glowPurple)">
+    <!-- Bar 1 (top, longest) -->
+    <rect x="332" y="218" width="138" height="10" rx="5" fill="url(#wR)" opacity="0.9"/>
+    <!-- Bar 2 (middle) -->
+    <rect x="332" y="234" width="118" height="10" rx="5" fill="url(#wR)" opacity="0.7"/>
+    <!-- Bar 3 (bottom, shortest) -->
+    <rect x="332" y="250" width="98" height="10" rx="5" fill="url(#wR)" opacity="0.5"/>
+  </g>
+
+  <!-- ═══ PILOT HELMET ═══ -->
+  <path d="M180,260 C180,165 208,120 256,108 C304,120 332,165 332,260 Z"
+        fill="url(#helmetGrad)" stroke="url(#cyanPurple)" stroke-width="1.5" stroke-opacity="0.3" opacity="0.85"/>
+  <!-- Right overlay for gradient split -->
+  <path d="M256,108 C304,120 332,165 332,260 L256,260 Z"
+        fill="url(#helmetGrad)" opacity="0.4"/>
+
+  <!-- Antenna -->
+  <line x1="256" y1="95" x2="256" y2="130" stroke="url(#cyanPurpleV)" stroke-width="4" stroke-linecap="round"/>
+  <path d="M225,132 Q240,118 256,115 Q272,118 287,132" fill="none" stroke="url(#cyanPurple)" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+
+  <!-- Neural network mesh on dome -->
+  <g stroke="url(#cyanPurple)" stroke-width="0.8" fill="none" opacity="0.3">
+    <line x1="230" y1="145" x2="256" y2="134"/>
+    <line x1="256" y1="134" x2="282" y2="145"/>
+    <line x1="230" y1="145" x2="244" y2="162"/>
+    <line x1="282" y1="145" x2="268" y2="162"/>
+    <line x1="244" y1="162" x2="268" y2="162"/>
+    <line x1="244" y1="162" x2="234" y2="178"/>
+    <line x1="268" y1="162" x2="278" y2="178"/>
+    <line x1="256" y1="134" x2="256" y2="158"/>
+    <line x1="256" y1="158" x2="244" y2="162"/>
+    <line x1="256" y1="158" x2="268" y2="162"/>
+    <line x1="234" y1="178" x2="256" y2="172"/>
+    <line x1="278" y1="178" x2="256" y2="172"/>
+    <line x1="218" y1="158" x2="230" y2="145"/>
+    <line x1="294" y1="158" x2="282" y2="145"/>
+    <line x1="218" y1="158" x2="234" y2="178"/>
+    <line x1="294" y1="158" x2="278" y2="178"/>
+  </g>
+  <g fill="url(#cyanPurple)" opacity="0.45">
+    <circle cx="256" cy="134" r="2.5"/>
+    <circle cx="230" cy="145" r="2"/>
+    <circle cx="282" cy="145" r="2"/>
+    <circle cx="244" cy="162" r="2"/>
+    <circle cx="268" cy="162" r="2"/>
+    <circle cx="256" cy="158" r="1.8"/>
+    <circle cx="234" cy="178" r="2"/>
+    <circle cx="278" cy="178" r="2"/>
+    <circle cx="256" cy="172" r="1.5"/>
+    <circle cx="218" cy="158" r="2"/>
+    <circle cx="294" cy="158" r="2"/>
+  </g>
+
+  <!-- ═══ MODERN VR-STYLE GOGGLES ═══ -->
+  <!-- Wide goggle frame wrapping across helmet -->
+  <path d="M165,210 Q165,192 185,190 L327,190 Q347,192 347,210 Q347,232 327,235 L185,235 Q165,232 165,210 Z"
+        fill="url(#goggleFill)" stroke="url(#cyanPurple)" stroke-width="2.5" stroke-opacity="0.6"/>
+  <!-- Goggle inner dark band -->
+  <path d="M172,210 Q172,196 190,194 L322,194 Q340,196 340,210 Q340,228 322,230 L190,230 Q172,228 172,210 Z"
+        fill="#060618" opacity="0.6"/>
+  <!-- Left lens reflection -->
+  <rect x="182" y="198" width="55" height="10" rx="5" fill="#00d2ff" opacity="0.08"/>
+  <!-- Right lens reflection -->
+  <rect x="275" y="198" width="55" height="10" rx="5" fill="#9b30ff" opacity="0.08"/>
+  <!-- Center divider line -->
+  <line x1="256" y1="194" x2="256" y2="230" stroke="#2a2a4c" stroke-width="1.5" opacity="0.4"/>
+  <!-- Goggle side vents -->
+  <line x1="160" y1="206" x2="150" y2="204" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+  <line x1="160" y1="214" x2="150" y2="216" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+  <line x1="352" y1="206" x2="362" y2="204" stroke="#9b30ff" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+  <line x1="352" y1="214" x2="362" y2="216" stroke="#9b30ff" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
+
+  <!-- ═══ CHIN / NOSE BRIDGE (V-shape like in PNG) ═══ -->
+  <path d="M210,260 L256,290 L302,260"
+        fill="none" stroke="url(#cyanPurple)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+  <!-- Helmet lower cheeks -->
+  <path d="M195,235 Q190,255 210,260" fill="none" stroke="url(#cyanPurple)" stroke-width="1.5" stroke-opacity="0.25"/>
+  <path d="M317,235 Q322,255 302,260" fill="none" stroke="url(#cyanPurple)" stroke-width="1.5" stroke-opacity="0.25"/>
+
+  <!-- ═══ TEXT ═══ -->
+  <text x="256" y="400" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="52" font-weight="800" text-anchor="middle" letter-spacing="1">
+    <tspan fill="#334155">Debug</tspan><tspan fill="url(#cyanPurple)">Pilot</tspan>
+  </text>
+  <text x="256" y="432" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="16" fill="#64748b" text-anchor="middle" letter-spacing="2" opacity="0.7">AI-Powered Debugging for VS Code</text>
 </svg>
