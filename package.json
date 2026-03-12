@@ -62,6 +62,70 @@
         }
       }
     },
+    "walkthroughs": [
+      {
+        "id": "debugpilot.gettingStarted",
+        "title": "Getting Started with DebugPilot",
+        "description": "Learn how to connect your AI agent to VS Code's debugger via MCP.",
+        "steps": [
+          {
+            "id": "debugpilot.install",
+            "title": "Install DebugPilot",
+            "description": "DebugPilot is now installed. It starts an MCP server automatically when VS Code launches.\n\nYou should see a **DebugPilot :PORT** indicator in the status bar.\n\n[Show Connection Info](command:debugpilot.showConnectionInfo)",
+            "media": {
+              "markdown": "media/walkthrough/install.md"
+            },
+            "completionEvents": [
+              "onExtensionLoaded:inkan-link.debugpilot"
+            ]
+          },
+          {
+            "id": "debugpilot.configureMcp",
+            "title": "Configure Your MCP Client",
+            "description": "Add DebugPilot to your AI agent's MCP configuration.\n\nFor **Claude Desktop / Claude Code**, add to your `.mcp.json`:\n```json\n{\n  \"mcpServers\": {\n    \"debugpilot\": {\n      \"url\": \"http://127.0.0.1:4711/mcp\"\n    }\n  }\n}\n```\n\n[Copy MCP URL](command:debugpilot.showConnectionInfo)",
+            "media": {
+              "markdown": "media/walkthrough/configure-mcp.md"
+            },
+            "completionEvents": [
+              "onStepSelected:debugpilot.configureMcp"
+            ]
+          },
+          {
+            "id": "debugpilot.startDebug",
+            "title": "Start a Debug Session",
+            "description": "Start any debug session in VS Code — Node.js, Python, C++, or any other debugger.\n\nSet a breakpoint in your code and launch the debugger.\n\n[Open Run and Debug](command:workbench.action.debug.start)",
+            "media": {
+              "markdown": "media/walkthrough/start-debug.md"
+            },
+            "completionEvents": [
+              "onCommand:workbench.action.debug.start"
+            ]
+          },
+          {
+            "id": "debugpilot.connectAgent",
+            "title": "Connect Your AI Agent",
+            "description": "Once your MCP client is configured, your AI agent can discover DebugPilot's tools automatically.\n\nAsk your agent to list debug sessions — it will use the `debug_sessions` tool to see active sessions.\n\n[Show Status](command:debugPilot.showStatus)",
+            "media": {
+              "markdown": "media/walkthrough/connect-agent.md"
+            },
+            "completionEvents": [
+              "onStepSelected:debugpilot.connectAgent"
+            ]
+          },
+          {
+            "id": "debugpilot.useTools",
+            "title": "Use Debug Tools",
+            "description": "Your AI agent now has access to powerful debug tools:\n\n- **debug_state** — View current location, source, locals, and call stack\n- **debug_variables** — Inspect and expand variables\n- **debug_evaluate** — Evaluate expressions in the current frame\n- **debug_breakpoint_set** — Set breakpoints programmatically\n- **debug_step** — Step over, into, or out\n- **debug_continue** — Resume execution\n\nAsk your agent to investigate a bug — it can read variables, set breakpoints, and step through code.",
+            "media": {
+              "markdown": "media/walkthrough/use-tools.md"
+            },
+            "completionEvents": [
+              "onStepSelected:debugpilot.useTools"
+            ]
+          }
+        ]
+      }
+    ],
     "commands": [
       {
         "command": "debugPilot.restart",
