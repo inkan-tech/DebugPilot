@@ -124,10 +124,13 @@ export class DebugMcpServer {
       return;
     }
 
-    // No session ID — must be an initialize request
-    if (!sessionId && req.method === "POST") {
+    // No session ID, or stale session ID — try to initialize a new session
+    if (req.method === "POST") {
       const body = await readBody(req);
       if (isInitializeRequest(body)) {
+        if (sessionId) {
+          console.log(`[DebugPilot] Stale session ${sessionId}, creating new session`);
+        }
         const { server, transport } = this.createSession();
         await server.connect(transport);
         await transport.handleRequest(req, res, body);
