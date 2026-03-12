@@ -40,7 +40,7 @@ export class DebugMcpServer {
   private createSession(): { server: McpServer; transport: StreamableHTTPServerTransport; notificationManager?: NotificationManager } {
     const server = new McpServer({
       name: EXTENSION_ID,
-      version: "0.7.2",
+      version: "0.7.3",
     });
 
     registerAllTools(server, this.adapter);
