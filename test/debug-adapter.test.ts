@@ -335,7 +335,7 @@ describe("VscodeDebugAdapter.evaluate", () => {
     const adapter = new VscodeDebugAdapter(mgr);
 
     await expect(adapter.evaluate("bad", "1+1")).rejects.toThrow(
-      "Session bad not found",
+      "No active debug sessions",
     );
   });
 

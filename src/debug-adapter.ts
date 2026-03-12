@@ -18,6 +18,21 @@ import {
 } from "./constants.js";
 
 /**
+ * Validates that a session exists and returns it, or throws an actionable error.
+ */
+export function requireSession(sessionManager: SessionManager, sessionId: string): vscode.DebugSession {
+  const session = sessionManager.getSession(sessionId);
+  if (!session) {
+    const available = sessionManager.getSessionInfoList().map(s => s.id);
+    if (available.length === 0) {
+      throw new Error(`No active debug sessions. Start a debug session first, then call debug_sessions to get the sessionId.`);
+    }
+    throw new Error(`Session "${sessionId}" not found. Available sessions: ${available.join(", ")}. Call debug_sessions to see current sessions.`);
+  }
+  return session;
+}
+
+/**
  * IDebugAdapter implementation wrapping vscode.debug.* APIs.
  */
 export class VscodeDebugAdapter implements IDebugAdapter {
@@ -139,10 +154,7 @@ export class VscodeDebugAdapter implements IDebugAdapter {
     expression: string,
     frameId?: number,
   ): Promise<{ result: string; type?: string; variableReference: number }> {
-    const session = this.sessionManager.getSession(sessionId);
-    if (!session) {
-      throw new Error(`Session ${sessionId} not found`);
-    }
+    const session = requireSession(this.sessionManager, sessionId);
 
     const args: Record<string, unknown> = {
       expression,
@@ -152,11 +164,17 @@ export class VscodeDebugAdapter implements IDebugAdapter {
       args.frameId = frameId;
     }
 
-    const response = await session.customRequest("evaluate", args);
+    const timeoutMs = 10_000;
+    const response = await Promise.race([
+      session.customRequest("evaluate", args),
+      new Promise((_, reject) => setTimeout(() => reject(new Error(
+        `Expression evaluation timed out after ${timeoutMs}ms. The expression may be too complex or caused an infinite loop.`
+      )), timeoutMs)),
+    ]);
     return {
-      result: response.result,
-      type: response.type,
-      variableReference: response.variablesReference ?? 0,
+      result: (response as any).result,
+      type: (response as any).type,
+      variableReference: (response as any).variablesReference ?? 0,
     };
   }
 
@@ -187,23 +205,20 @@ export class VscodeDebugAdapter implements IDebugAdapter {
   }
 
   async continue(sessionId: string, threadId?: number): Promise<void> {
-    const session = this.sessionManager.getSession(sessionId);
-    if (!session) throw new Error(`Session ${sessionId} not found`);
+    const session = requireSession(this.sessionManager, sessionId);
     const tid = await this.resolveThreadId(session, threadId);
     await session.customRequest("continue", { threadId: tid });
   }
 
   async step(sessionId: string, type: "over" | "into" | "out", threadId?: number): Promise<void> {
-    const session = this.sessionManager.getSession(sessionId);
-    if (!session) throw new Error(`Session ${sessionId} not found`);
+    const session = requireSession(this.sessionManager, sessionId);
     const tid = await this.resolveThreadId(session, threadId);
     const command = type === "over" ? "next" : type === "into" ? "stepIn" : "stepOut";
     await session.customRequest(command, { threadId: tid });
   }
 
   async pause(sessionId: string, threadId?: number): Promise<void> {
-    const session = this.sessionManager.getSession(sessionId);
-    if (!session) throw new Error(`Session ${sessionId} not found`);
+    const session = requireSession(this.sessionManager, sessionId);
     const tid = await this.resolveThreadId(session, threadId);
     await session.customRequest("pause", { threadId: tid });
   }
@@ -247,8 +262,7 @@ export class VscodeDebugAdapter implements IDebugAdapter {
   }
 
   async setExceptionBreakpoints(sessionId: string, filters: string[]): Promise<void> {
-    const session = this.sessionManager.getSession(sessionId);
-    if (!session) throw new Error(`Session ${sessionId} not found`);
+    const session = requireSession(this.sessionManager, sessionId);
     await session.customRequest("setExceptionBreakpoints", { filters });
   }
 
@@ -277,8 +291,7 @@ export class VscodeDebugAdapter implements IDebugAdapter {
   }
 
   async stop(sessionId: string): Promise<void> {
-    const session = this.sessionManager.getSession(sessionId);
-    if (!session) throw new Error(`Session ${sessionId} not found`);
+    const session = requireSession(this.sessionManager, sessionId);
     await vscode.debug.stopDebugging(session);
   }
 
@@ -297,8 +310,7 @@ export class VscodeDebugAdapter implements IDebugAdapter {
   }
 
   async customRequest(sessionId: string, command: string, args?: Record<string, unknown>): Promise<unknown> {
-    const session = this.sessionManager.getSession(sessionId);
-    if (!session) throw new Error(`Session ${sessionId} not found`);
+    const session = requireSession(this.sessionManager, sessionId);
     return session.customRequest(command, args);
   }
 

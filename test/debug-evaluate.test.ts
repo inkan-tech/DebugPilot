@@ -27,12 +27,12 @@ describe("debug_evaluate error handling", () => {
   it("throws when session is not found", async () => {
     const adapter = createAdapter({
       async evaluate(sessionId: string) {
-        throw new Error(`Session ${sessionId} not found`);
+        throw new Error(`No active debug sessions. Start a debug session first, then call debug_sessions to get the sessionId.`);
       },
     });
 
     await expect(adapter.evaluate("missing", "1+1")).rejects.toThrow(
-      "Session missing not found",
+      "No active debug sessions",
     );
   });
 
