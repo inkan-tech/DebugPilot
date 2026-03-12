@@ -1,0 +1,24 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.inkan-tech/debugpilot",
+  "description": "MCP server exposing VS Code Debug Adapter Protocol to AI agents — inspect variables, set breakpoints, step through code, and control debug sessions",
+  "title": "DebugPilot",
+  "websiteUrl": "https://marketplace.visualstudio.com/items?itemName=inkan-link.debugpilot",
+  "repository": {
+    "url": "https://github.com/inkan-tech/DebugPilot",
+    "source": "github"
+  },
+  "version": "0.7.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "debugpilot-mcp",
+      "version": "0.7.0",
+      "transport": {
+        "type": "streamable-http",
+        "authorization": "none"
+      }
+    }
+  ]
+}

@@ -43,10 +43,7 @@ export class VscodeDebugAdapter implements IDebugAdapter {
   }
 
   async getState(sessionId: string): Promise<DebugState> {
-    const session = this.sessionManager.getSession(sessionId);
-    if (!session) {
-      return { paused: false, locals: [], callStack: [] };
-    }
+    const session = requireSession(this.sessionManager, sessionId);
 
     // Get threads
     const threadsResponse = await session.customRequest("threads");
@@ -142,8 +139,7 @@ export class VscodeDebugAdapter implements IDebugAdapter {
     variableReference: number,
     depth: number = DEFAULT_VARIABLE_DEPTH_LIMIT,
   ): Promise<Variable[]> {
-    const session = this.sessionManager.getSession(sessionId);
-    if (!session) return [];
+    const session = requireSession(this.sessionManager, sessionId);
 
     const clampedDepth = Math.min(depth, MAX_VARIABLE_DEPTH);
     return this.fetchVariables(session, variableReference, clampedDepth);
@@ -183,6 +179,7 @@ export class VscodeDebugAdapter implements IDebugAdapter {
     since?: string,
     pattern?: string,
   ): ConsoleMessage[] {
+    requireSession(this.sessionManager, sessionId);
     const buffer = this.sessionManager.getConsoleBuffer(sessionId);
     if (!buffer) return [];
     return buffer.getMessages(since, pattern);

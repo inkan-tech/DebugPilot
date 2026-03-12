@@ -12,10 +12,17 @@ export function registerDebugHotReload(server: McpServer, adapter: IDebugAdapter
       reason: z.enum(["manual", "save"]).optional().describe("Trigger reason (default: manual)"),
     },
     async ({ sessionId, reason }) => {
-      await adapter.customRequest(sessionId, "hotReload", { reason: reason ?? "manual" });
-      return {
-        content: [{ type: "text" as const, text: JSON.stringify({ status: "reloaded", sessionId }) }],
-      };
+      try {
+        await adapter.customRequest(sessionId, "hotReload", { reason: reason ?? "manual" });
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ status: "reloaded", sessionId }) }],
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ error: err instanceof Error ? err.message : String(err) }) }],
+          isError: true,
+        };
+      }
     },
   );
 }

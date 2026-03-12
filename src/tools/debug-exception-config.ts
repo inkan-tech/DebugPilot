@@ -12,10 +12,17 @@ export function registerDebugExceptionConfig(server: McpServer, adapter: IDebugA
       filters: z.array(z.string()).describe('Exception filter IDs (e.g. ["uncaught", "caught"] for JS/TS, ["raised", "uncaught"] for Python, ["All", "Unhandled"] for Dart/Flutter)'),
     },
     async ({ sessionId, filters }) => {
-      await adapter.setExceptionBreakpoints(sessionId, filters);
-      return {
-        content: [{ type: "text" as const, text: JSON.stringify({ status: "configured", filters }) }],
-      };
+      try {
+        await adapter.setExceptionBreakpoints(sessionId, filters);
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ status: "configured", filters }) }],
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ error: err instanceof Error ? err.message : String(err) }) }],
+          isError: true,
+        };
+      }
     },
   );
 }

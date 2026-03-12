@@ -203,4 +203,100 @@ describe("SessionManager", () => {
 
     manager.dispose();
   });
+
+  describe("event emission", () => {
+    it("emits sessionStarted when a session starts", () => {
+      const { manager, onStartSession } = createManagerWithCallbacks();
+      const listener = vi.fn();
+      manager.events.on("sessionStarted", listener);
+
+      onStartSession(fakeSession("s1", "My App", "node"));
+
+      expect(listener).toHaveBeenCalledWith({
+        sessionId: "s1",
+        name: "My App",
+        type: "node",
+      });
+
+      manager.dispose();
+    });
+
+    it("emits sessionTerminated when a session ends", () => {
+      const { manager, onStartSession, onTerminateSession } =
+        createManagerWithCallbacks();
+      const listener = vi.fn();
+      manager.events.on("sessionTerminated", listener);
+
+      const session = fakeSession("s1");
+      onStartSession(session);
+      onTerminateSession(session);
+
+      expect(listener).toHaveBeenCalledWith({ sessionId: "s1" });
+
+      manager.dispose();
+    });
+
+    it("emits stopped with reason on stopped event", () => {
+      const { manager, onStartSession, trackerFactory } =
+        createManagerWithCallbacks();
+      const listener = vi.fn();
+      manager.events.on("stopped", listener);
+
+      const session = fakeSession("s1");
+      onStartSession(session);
+      const tracker = trackerFactory.createDebugAdapterTracker(session);
+
+      tracker.onDidSendMessage({
+        type: "event",
+        event: "stopped",
+        body: { reason: "exception" },
+      });
+
+      expect(listener).toHaveBeenCalledWith({
+        sessionId: "s1",
+        reason: "exception",
+      });
+
+      manager.dispose();
+    });
+
+    it("emits continued on continued event", () => {
+      const { manager, onStartSession, trackerFactory } =
+        createManagerWithCallbacks();
+      const listener = vi.fn();
+      manager.events.on("continued", listener);
+
+      const session = fakeSession("s1");
+      onStartSession(session);
+      const tracker = trackerFactory.createDebugAdapterTracker(session);
+
+      tracker.onDidSendMessage({
+        type: "event",
+        event: "continued",
+        body: {},
+      });
+
+      expect(listener).toHaveBeenCalledWith({ sessionId: "s1" });
+
+      manager.dispose();
+    });
+
+    it("removes all listeners on dispose", () => {
+      const { manager, onStartSession } = createManagerWithCallbacks();
+      const listener = vi.fn();
+      manager.events.on("sessionStarted", listener);
+
+      manager.dispose();
+
+      // Re-mock to avoid errors from disposed disposables
+      vi.spyOn(debug, "onDidStartDebugSession").mockImplementation((cb: any) => {
+        // Simulate another start after dispose
+        return { dispose: () => {} };
+      });
+
+      // Emitting after dispose should not trigger listener
+      manager.events.emit("sessionStarted", { sessionId: "s2", name: "X", type: "node" });
+      expect(listener).not.toHaveBeenCalled();
+    });
+  });
 });

@@ -13,8 +13,15 @@ export function registerDebugRunTo(server: McpServer, adapter: IDebugAdapter): v
       line: z.number().describe("Line number (1-based)"),
     },
     async ({ sessionId, file, line }) => {
-      await adapter.runTo(sessionId, file, line);
-      return { content: [{ type: "text" as const, text: JSON.stringify({ status: "running_to", file, line, sessionId }) }] };
+      try {
+        await adapter.runTo(sessionId, file, line);
+        return { content: [{ type: "text" as const, text: JSON.stringify({ status: "running_to", file, line, sessionId }) }] };
+      } catch (err) {
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ error: err instanceof Error ? err.message : String(err) }) }],
+          isError: true,
+        };
+      }
     },
   );
 }

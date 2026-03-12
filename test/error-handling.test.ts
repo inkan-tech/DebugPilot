@@ -117,6 +117,50 @@ describe("VscodeDebugAdapter error messages", () => {
       adapter.setExceptionBreakpoints("missing", ["uncaught"]),
     ).rejects.toThrow("No active debug sessions");
   });
+
+  it("getState throws actionable error with no sessions", async () => {
+    const mgr = createMockSessionManager([]);
+    const adapter = new VscodeDebugAdapter(mgr);
+    await expect(adapter.getState("missing")).rejects.toThrow(
+      "No active debug sessions",
+    );
+  });
+
+  it("getState throws actionable error listing available sessions", async () => {
+    const mgr = createMockSessionManager([
+      { id: "s1", name: "Test", type: "node" },
+    ]);
+    const adapter = new VscodeDebugAdapter(mgr);
+    await expect(adapter.getState("wrong")).rejects.toThrow(
+      'Session "wrong" not found. Available sessions: s1',
+    );
+  });
+
+  it("getVariables throws actionable error with no sessions", async () => {
+    const mgr = createMockSessionManager([]);
+    const adapter = new VscodeDebugAdapter(mgr);
+    await expect(adapter.getVariables("missing", 1)).rejects.toThrow(
+      "No active debug sessions",
+    );
+  });
+
+  it("getConsoleMessages throws actionable error with no sessions", () => {
+    const mgr = createMockSessionManager([]);
+    const adapter = new VscodeDebugAdapter(mgr);
+    expect(() => adapter.getConsoleMessages("missing")).toThrow(
+      "No active debug sessions",
+    );
+  });
+
+  it("getConsoleMessages throws actionable error listing available sessions", () => {
+    const mgr = createMockSessionManager([
+      { id: "s1", name: "Test", type: "node" },
+    ]);
+    const adapter = new VscodeDebugAdapter(mgr);
+    expect(() => adapter.getConsoleMessages("wrong")).toThrow(
+      'Session "wrong" not found. Available sessions: s1',
+    );
+  });
 });
 
 describe("evaluate timeout", () => {

@@ -9,8 +9,15 @@ export function registerDebugContinue(server: McpServer, adapter: IDebugAdapter)
     "Resume execution of a paused debug session. Requires a sessionId from debug_sessions",
     { sessionId: z.string().describe("Debug session ID (get from debug_sessions)"), threadId: z.number().optional().describe("Thread ID (default: first thread)") },
     async ({ sessionId, threadId }) => {
-      await adapter.continue(sessionId, threadId);
-      return { content: [{ type: "text" as const, text: JSON.stringify({ status: "continued", sessionId }) }] };
+      try {
+        await adapter.continue(sessionId, threadId);
+        return { content: [{ type: "text" as const, text: JSON.stringify({ status: "continued", sessionId }) }] };
+      } catch (err) {
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ error: err instanceof Error ? err.message : String(err) }) }],
+          isError: true,
+        };
+      }
     },
   );
 }

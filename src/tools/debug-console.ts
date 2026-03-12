@@ -16,15 +16,29 @@ export function registerDebugConsole(
       pattern: z.string().optional().describe("Regex pattern to filter messages"),
     },
     async ({ sessionId, since, pattern }) => {
-      const messages = adapter.getConsoleMessages(sessionId, since, pattern);
-      return {
-        content: [
-          {
-            type: "text" as const,
-            text: JSON.stringify({ messages }, null, 2),
-          },
-        ],
-      };
+      try {
+        const messages = adapter.getConsoleMessages(sessionId, since, pattern);
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: JSON.stringify({ messages }, null, 2),
+            },
+          ],
+        };
+      } catch (err) {
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: JSON.stringify({
+                error: err instanceof Error ? err.message : String(err),
+              }),
+            },
+          ],
+          isError: true,
+        };
+      }
     },
   );
 }

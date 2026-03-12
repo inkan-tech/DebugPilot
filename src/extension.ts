@@ -19,7 +19,7 @@ export async function activate(
 
   sessionManager = new SessionManager();
   adapter = new VscodeDebugAdapter(sessionManager);
-  server = new DebugMcpServer(adapter);
+  server = new DebugMcpServer(adapter, sessionManager);
 
   // Status bar item
   const statusBarItem = vscode.window.createStatusBarItem(

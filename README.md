@@ -1,3 +1,4 @@
+<!-- mcp-name: io.github.inkan-tech/debugpilot -->
 <p align="center">
   <img src="assets/logo.png" alt="DebugPilot" width="320"/>
 </p>
@@ -17,6 +18,7 @@ DebugPilot is a VS Code extension that exposes the Debug Adapter Protocol (DAP) 
 ## Features
 
 ### Inspection
+
 - **`debug_sessions`** — list active debug sessions with status and pause reason
 - **`debug_state`** — full snapshot: pause location, source context, locals, call stack
 - **`debug_variables`** — get/expand variables with configurable depth (up to 5 levels)
@@ -25,6 +27,7 @@ DebugPilot is a VS Code extension that exposes the Debug Adapter Protocol (DAP) 
 - **`debug_breakpoints_list`** — list all breakpoints with conditions and hit counts
 
 ### Control
+
 - **`debug_continue`** — resume execution
 - **`debug_step`** — step over / into / out
 - **`debug_pause`** — pause a running session
@@ -33,6 +36,7 @@ DebugPilot is a VS Code extension that exposes the Debug Adapter Protocol (DAP) 
 - **`debug_exception_config`** — configure exception breakpoints (caught/uncaught)
 
 ### Flutter / Dart
+
 - **`debug_hot_reload`** — inject code changes into running Dart VM (preserves app state)
 - **`debug_hot_restart`** — full restart with code update (resets app state)
 

@@ -1,3 +1,4 @@
+import { EventEmitter } from "node:events";
 import * as vscode from "vscode";
 import type { SessionInfo, SourceLocation } from "./types.js";
 import { ConsoleBuffer } from "./console-buffer.js";
@@ -11,6 +12,21 @@ export interface PauseState {
 }
 
 /**
+ * Events emitted by SessionManager for debug state changes.
+ *
+ * - "sessionStarted"   — { sessionId, name, type }
+ * - "sessionTerminated" — { sessionId }
+ * - "stopped"           — { sessionId, reason } (breakpoint hit, exception, step, pause)
+ * - "continued"         — { sessionId }
+ */
+export interface SessionManagerEvents {
+  sessionStarted: [{ sessionId: string; name: string; type: string }];
+  sessionTerminated: [{ sessionId: string }];
+  stopped: [{ sessionId: string; reason: "breakpoint" | "exception" | "step" | "pause" }];
+  continued: [{ sessionId: string }];
+}
+
+/**
  * Tracks active debug sessions, their console buffers, and pause state.
  */
 export class SessionManager implements vscode.Disposable {
@@ -18,6 +34,12 @@ export class SessionManager implements vscode.Disposable {
   private consoleBuffers = new Map<string, ConsoleBuffer>();
   private pauseStates = new Map<string, PauseState>();
   private disposables: vscode.Disposable[] = [];
+  private readonly _emitter = new EventEmitter();
+
+  /** Typed event emitter for debug state changes. */
+  get events(): EventEmitter {
+    return this._emitter;
+  }
 
   constructor() {
     this.disposables.push(
@@ -29,11 +51,17 @@ export class SessionManager implements vscode.Disposable {
             .getConfiguration(CONFIG_SECTION)
             .get<number>("consoleBufferSize") ?? DEFAULT_CONSOLE_BUFFER_SIZE;
         this.consoleBuffers.set(session.id, new ConsoleBuffer(bufferSize));
+        this._emitter.emit("sessionStarted", {
+          sessionId: session.id,
+          name: session.name,
+          type: session.type,
+        });
       }),
       vscode.debug.onDidTerminateDebugSession((session) => {
         this.sessions.delete(session.id);
         this.consoleBuffers.delete(session.id);
         this.pauseStates.delete(session.id);
+        this._emitter.emit("sessionTerminated", { sessionId: session.id });
       }),
     );
 
@@ -55,8 +83,13 @@ export class SessionManager implements vscode.Disposable {
                   // Location will be populated lazily via getState() DAP calls;
                   // the stopped event doesn't include source location.
                 });
+                this._emitter.emit("stopped", {
+                  sessionId: session.id,
+                  reason,
+                });
               } else if (message.event === "continued") {
                 this.pauseStates.set(session.id, { paused: false });
+                this._emitter.emit("continued", { sessionId: session.id });
               }
             },
           };
@@ -115,6 +148,7 @@ export class SessionManager implements vscode.Disposable {
     this.sessions.clear();
     this.consoleBuffers.clear();
     this.pauseStates.clear();
+    this._emitter.removeAllListeners();
   }
 }
 

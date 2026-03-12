@@ -12,10 +12,17 @@ export function registerDebugHotRestart(server: McpServer, adapter: IDebugAdapte
       reason: z.enum(["manual", "save"]).optional().describe("Trigger reason (default: manual)"),
     },
     async ({ sessionId, reason }) => {
-      await adapter.customRequest(sessionId, "hotRestart", { reason: reason ?? "manual" });
-      return {
-        content: [{ type: "text" as const, text: JSON.stringify({ status: "restarted", sessionId }) }],
-      };
+      try {
+        await adapter.customRequest(sessionId, "hotRestart", { reason: reason ?? "manual" });
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ status: "restarted", sessionId }) }],
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ error: err instanceof Error ? err.message : String(err) }) }],
+          isError: true,
+        };
+      }
     },
   );
 }

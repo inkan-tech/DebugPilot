@@ -60,15 +60,13 @@ function createMockSessionManager(
 }
 
 describe("VscodeDebugAdapter.getState", () => {
-  it("returns not-paused state when session not found", async () => {
+  it("throws actionable error when session not found", async () => {
     const mgr = createMockSessionManager(null);
     const adapter = new VscodeDebugAdapter(mgr);
 
-    const state = await adapter.getState("nonexistent");
-
-    expect(state.paused).toBe(false);
-    expect(state.locals).toEqual([]);
-    expect(state.callStack).toEqual([]);
+    await expect(adapter.getState("nonexistent")).rejects.toThrow(
+      "No active debug sessions",
+    );
   });
 
   it("returns not-paused state when no threads", async () => {
@@ -181,13 +179,13 @@ describe("VscodeDebugAdapter.getState", () => {
 });
 
 describe("VscodeDebugAdapter.getVariables", () => {
-  it("returns empty array when session not found", async () => {
+  it("throws actionable error when session not found", async () => {
     const mgr = createMockSessionManager(null);
     const adapter = new VscodeDebugAdapter(mgr);
 
-    const vars = await adapter.getVariables("nonexistent", 1);
-
-    expect(vars).toEqual([]);
+    await expect(adapter.getVariables("nonexistent", 1)).rejects.toThrow(
+      "No active debug sessions",
+    );
   });
 
   it("returns flat variables at depth 1", async () => {

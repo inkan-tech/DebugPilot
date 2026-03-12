@@ -9,8 +9,15 @@ export function registerDebugStop(server: McpServer, adapter: IDebugAdapter): vo
     "Stop a debug session. Requires a sessionId from debug_sessions",
     { sessionId: z.string().describe("Debug session ID (get from debug_sessions)") },
     async ({ sessionId }) => {
-      await adapter.stop(sessionId);
-      return { content: [{ type: "text" as const, text: JSON.stringify({ status: "stopped", sessionId }) }] };
+      try {
+        await adapter.stop(sessionId);
+        return { content: [{ type: "text" as const, text: JSON.stringify({ status: "stopped", sessionId }) }] };
+      } catch (err) {
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ error: err instanceof Error ? err.message : String(err) }) }],
+          isError: true,
+        };
+      }
     },
   );
 }

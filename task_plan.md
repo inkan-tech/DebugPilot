@@ -1,18 +1,21 @@
 # DebugPilot — Task Plan
 
 ## Goal
+
 Ship DebugPilot as a complete MCP debug server — subscriptions, prompts, and polished DX.
 
-**Current version**: v0.6.2 | **96 tests** | **18 tools** | Published on VS Code Marketplace
+**Current version**: v0.7.0 | **155 tests** | **18 tools** | Published on VS Code Marketplace
 
 ---
 
 ## Phase 1: Core Read Tools (MVP) — COMPLETE
+
 - [x] Extension scaffold, Streamable HTTP transport
 - [x] 6 read-only tools: sessions, state, variables, evaluate, console, breakpoints_list
 - [x] Unit tests for all tools
 
 ## Phase 2: Write Control — COMPLETE
+
 - [x] `debug_continue`, `debug_step`, `debug_pause`
 - [x] `debug_breakpoint_set`, `debug_breakpoint_remove`
 - [x] `debug_exception_config`
@@ -22,52 +25,61 @@ Ship DebugPilot as a complete MCP debug server — subscriptions, prompts, and p
 - [x] Unit tests for all 12 control tools
 - [x] Integration test framework (10 tests: HTTP, MCP protocol, tool registration)
 
-## Phase 3: Subscriptions + Prompts — IN PROGRESS
+## Phase 3: Subscriptions + Prompts — COMPLETE
+
 Agent reacts to debug events in real-time.
 
 ### 3a: MCP Resources with Subscriptions
-- [ ] `debug://sessions` — live list of debug sessions (subscribable)
-- [ ] `debug://console/{sessionId}` — live console stream
-- [ ] `debug://breakpoints` — current breakpoint list (updates on add/remove/hit)
+
+- [x] `debug://sessions` — live list of debug sessions
+- [x] `debug://console/{sessionId}` — live console stream
+- [x] `debug://breakpoints` — current breakpoint list
 
 ### 3b: Event Notifications
-- [ ] Breakpoint hit notification
-- [ ] Exception thrown notification
-- [ ] Session start/stop notifications
+
+- [x] Breakpoint hit notification
+- [x] Exception thrown notification
+- [x] Session start/stop notifications
 
 ### 3c: Pre-built Prompts
-- [ ] `debug_investigate` — "A breakpoint was hit. Analyze the bug."
+
+- [x] `debug_investigate` — "A breakpoint was hit. Analyze the bug."
   - Gathers: state, locals, call stack, recent console, source context
-- [ ] `debug_trace` — "Trace execution from A to B."
-  - Sets temp breakpoints/logpoints, collects data, returns trace
+- [x] `debug_trace` — "Trace execution from A to B."
+  - Location, stack, locals, console context
 
 ### 3d: Tests
-- [ ] Unit tests for resources
-- [ ] Unit tests for prompts
-- [ ] Integration tests for subscription flow
 
-## Phase 4: Polish, Robustness & DX — NOT STARTED
+- [x] Unit tests for resources (11 tests)
+- [x] Unit tests for prompts (6 tests)
+- [x] Integration tests for resources + prompts (12 tests)
+
+## Phase 4: Polish, Robustness & DX — IN PROGRESS
 
 ### 4a: Distribution
+
 - [ ] Submit to MCP server registry
-- [ ] Marketplace SEO (keywords, categories, screenshots)
-- [ ] README badges (installs, version, license)
+- [x] Marketplace SEO (keywords, categories, screenshots)
+- [x] README badges (installs, version, license)
+- [x] Example `.mcp.json` configs for Claude Code, Cursor, Continue.dev
 
 ### 4b: Robustness
-- [ ] Graceful handling: no active session, detached session
-- [ ] Expression evaluation timeout + cancellation
-- [ ] Session reconnect after extension reload
-- [ ] Actionable error messages (not raw DAP errors)
+
+- [x] Graceful handling: no active session, detached session (#35)
+- [x] Expression evaluation timeout + cancellation
+- [x] Session reconnect after extension reload (#36)
+- [x] Actionable error messages (not raw DAP errors)
 
 ### 4c: Developer Experience
-- [ ] Status bar item showing MCP server state + port
-- [ ] VS Code walkthrough (Getting Started)
-- [ ] Example `.mcp.json` configs for Claude Code, Cursor, Continue.dev
-- [ ] Command palette: "DebugPilot: Show Connection Info"
+
+- [x] Status bar item showing MCP server state + port
+- [x] VS Code walkthrough (Getting Started) (#37)
+- [x] Command palette: "DebugPilot: Show Connection Info"
 
 ---
 
 ## Decisions
+
 | Decision | Choice | Rationale |
 |----------|--------|-----------|
 | Transport | Streamable HTTP (port 45853) | Avoids OAuth/SSE issues |

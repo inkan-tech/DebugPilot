@@ -3,9 +3,11 @@ import { randomUUID } from "node:crypto";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import type { IDebugAdapter } from "./types.js";
+import type { SessionManager } from "./session-manager.js";
 import { registerAllTools } from "./tools/index.js";
 import { registerAllResources } from "./resources/index.js";
 import { registerAllPrompts } from "./prompts/index.js";
+import { NotificationManager } from "./notifications.js";
 import { EXTENSION_ID } from "./constants.js";
 
 const DEFAULT_PORT = 45853;
@@ -14,9 +16,13 @@ export class DebugMcpServer {
   private server: McpServer;
   private httpServer: http.Server | undefined;
   private transport: StreamableHTTPServerTransport | undefined;
+  private notificationManager: NotificationManager | undefined;
   private _port: number = DEFAULT_PORT;
 
-  constructor(private readonly adapter: IDebugAdapter) {
+  constructor(
+    private readonly adapter: IDebugAdapter,
+    private readonly sessionManager?: SessionManager,
+  ) {
     this.server = new McpServer({
       name: EXTENSION_ID,
       version: "0.7.0",
@@ -25,6 +31,13 @@ export class DebugMcpServer {
     registerAllTools(this.server, this.adapter);
     registerAllResources(this.server, this.adapter);
     registerAllPrompts(this.server, this.adapter);
+
+    if (this.sessionManager) {
+      this.notificationManager = new NotificationManager(
+        this.server.server,
+        this.sessionManager,
+      );
+    }
   }
 
   get port(): number {
@@ -131,6 +144,8 @@ export class DebugMcpServer {
   }
 
   async stop(): Promise<void> {
+    this.notificationManager?.dispose();
+    this.notificationManager = undefined;
     await this.transport?.close();
     this.transport = undefined;
     await this.server.close();

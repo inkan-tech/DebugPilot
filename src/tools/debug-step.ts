@@ -13,8 +13,15 @@ export function registerDebugStep(server: McpServer, adapter: IDebugAdapter): vo
       threadId: z.number().optional().describe("Thread ID (default: first thread)"),
     },
     async ({ sessionId, type, threadId }) => {
-      await adapter.step(sessionId, type, threadId);
-      return { content: [{ type: "text" as const, text: JSON.stringify({ status: "stepped", stepType: type, sessionId }) }] };
+      try {
+        await adapter.step(sessionId, type, threadId);
+        return { content: [{ type: "text" as const, text: JSON.stringify({ status: "stepped", stepType: type, sessionId }) }] };
+      } catch (err) {
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ error: err instanceof Error ? err.message : String(err) }) }],
+          isError: true,
+        };
+      }
     },
   );
 }

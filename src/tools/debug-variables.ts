@@ -16,19 +16,33 @@ export function registerDebugVariables(
       depth: z.number().optional().describe("Expansion depth (default 1, max 5)"),
     },
     async ({ sessionId, variableReference, depth }) => {
-      const variables = await adapter.getVariables(
-        sessionId,
-        variableReference,
-        depth,
-      );
-      return {
-        content: [
-          {
-            type: "text" as const,
-            text: JSON.stringify({ variables }, null, 2),
-          },
-        ],
-      };
+      try {
+        const variables = await adapter.getVariables(
+          sessionId,
+          variableReference,
+          depth,
+        );
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: JSON.stringify({ variables }, null, 2),
+            },
+          ],
+        };
+      } catch (err) {
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: JSON.stringify({
+                error: err instanceof Error ? err.message : String(err),
+              }),
+            },
+          ],
+          isError: true,
+        };
+      }
     },
   );
 }
