@@ -1,6 +1,6 @@
 # PRD-014: VS Code Debug MCP Server
 
-**Status**: Phase 1 Complete, Phase 2 In Progress
+**Status**: Phase 1 Complete, Phase 2 In Progress (v0.6.2)
 **Priority**: High
 **Created**: 2026-03-11
 **Target**: Open-source VS Code extension + MCP server
@@ -340,17 +340,38 @@ Pre-built prompt: "Trace execution from point A to point B." Sets temporary brea
 | `debug_investigate` prompt | S |
 | `debug_trace` prompt | M |
 
-### Phase 4: Multi-Runtime Validation
+### Phase 4: Polish, Robustness & DX
 
-| Runtime | Debug Adapter | Priority |
-|---------|---------------|----------|
-| Node.js | `node` / `pwa-node` | P0 |
-| Bun | `bun` | P0 |
-| Python | `debugpy` | P1 |
-| Go | `dlv` | P2 |
-| Rust | `lldb` / `codelldb` | P2 |
-| C/C++ | `cppdbg` / `lldb` | P2 |
-| Java | `java` | P3 |
+**Goal**: Production-ready extension with great onboarding and error resilience.
+
+#### 4a — Distribution & Discoverability
+
+| Task | Effort |
+|------|--------|
+| Submit to MCP server registry (mcp.so / official directory) | S |
+| Marketplace SEO: keywords, categories, screenshots | S |
+| Docs site or GitHub Pages with usage examples | M |
+| README badges (installs, version, license) | S |
+
+#### 4b — Robustness & Edge Cases
+
+| Task | Effort |
+|------|--------|
+| Graceful handling: no active session, detached session | S |
+| Expression evaluation timeout + cancellation | S |
+| Session reconnect after extension reload | M |
+| Rate limiting / request queuing for rapid tool calls | S |
+| Error messages with actionable guidance (not raw DAP errors) | M |
+
+#### 4c — Developer Experience & Onboarding
+
+| Task | Effort |
+|------|--------|
+| Status bar item showing MCP server state + port | S |
+| VS Code walkthrough (Getting Started tab) | M |
+| Example `.mcp.json` configs for Claude Code, Cursor, Continue.dev | S |
+| Auto-copy MCP connection URL to clipboard on start | S |
+| Command palette: "DebugPilot: Show Connection Info" | S |
 
 ---
 
@@ -397,17 +418,14 @@ Deep object trees can be huge. Default expand depth is 1 (immediate properties).
 
 ## Distribution
 
-- **VS Code Marketplace**: `debug-mcp-server` extension
-- **npm**: `@anthropic/debug-mcp-server` (for standalone use)
-- **GitHub**: open-source, MIT license
-- **MCP registry**: listed in the official MCP server directory
+- **VS Code Marketplace**: [`inkan-link.debugpilot`](https://marketplace.visualstudio.com/items?itemName=inkan-link.debugpilot) (pre-release)
+- **GitHub**: [inkan-tech/DebugPilot](https://github.com/inkan-tech/DebugPilot) — Apache 2.0
+- **MCP registry**: pending submission
 
 ---
 
 ## Open Questions
 
 1. Should `debug_evaluate` support `await` expressions? (Depends on runtime support)
-2. Should the extension auto-activate on any debug session, or require explicit opt-in?
-3. How to handle multiple simultaneous debug sessions? (compound launches)
-4. Should we support conditional tool availability? (e.g., `debug_step` only available when paused)
-5. Should we build this as a standalone repo or as part of the Claude Code VS Code extension?
+2. How to handle multiple simultaneous debug sessions? (compound launches)
+3. Should we support conditional tool availability? (e.g., `debug_step` only available when paused)
