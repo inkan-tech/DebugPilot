@@ -1,80 +1,78 @@
 # DebugPilot — Task Plan
 
 ## Goal
-Ship DebugPilot v0.2.0 to VS Code Marketplace as a production-ready extension.
+Ship DebugPilot as a complete MCP debug server — subscriptions, prompts, and polished DX.
+
+**Current version**: v0.6.2 | **96 tests** | **18 tools** | Published on VS Code Marketplace
 
 ---
 
 ## Phase 1: Core Read Tools (MVP) — COMPLETE
-- [x] Extension scaffold (TypeScript, esbuild)
-- [x] MCP server with Streamable HTTP transport
-- [x] `debug_sessions` — list sessions
-- [x] `debug_state` — location + source + locals + stack
-- [x] `debug_variables` — expand objects
-- [x] `debug_evaluate` — eval expressions
-- [x] `debug_console` — read output with filtering
-- [x] `debug_breakpoints_list` — list breakpoints
-- [x] Tests for all Phase 1 tools (56 tests passing)
+- [x] Extension scaffold, Streamable HTTP transport
+- [x] 6 read-only tools: sessions, state, variables, evaluate, console, breakpoints_list
+- [x] Unit tests for all tools
 
-## Phase 2: Control Tools — COMPLETE
-- [x] `debug_continue` — resume execution
-- [x] `debug_step` — step over/into/out
-- [x] `debug_pause` — pause running session
-- [x] `debug_breakpoint_set` — set breakpoints with conditions
-- [x] `debug_breakpoint_remove` — remove by ID
-- [x] `debug_exception_config` — configure exception breakpoints
-- [x] Tests for Phase 2 tools (21 tests across 6 files)
+## Phase 2: Write Control — COMPLETE
+- [x] `debug_continue`, `debug_step`, `debug_pause`
+- [x] `debug_breakpoint_set`, `debug_breakpoint_remove`
+- [x] `debug_exception_config`
+- [x] `debug_launch`, `debug_stop`
+- [x] `debug_logpoint_set`, `debug_run_to`
+- [x] `debug_hot_reload`, `debug_hot_restart` (Flutter/Dart)
+- [x] Unit tests for all 12 control tools
+- [x] Integration test framework (10 tests: HTTP, MCP protocol, tool registration)
 
-## Phase 3: Marketplace Submission — IN PROGRESS
+## Phase 3: Subscriptions + Prompts — IN PROGRESS
+Agent reacts to debug events in real-time.
 
-### Step 3a: Package Metadata (required) — COMPLETE
-- [x] README.md
-- [x] Logo assets (SVG + PNG)
-- [x] LICENSE (MIT)
-- [x] Create CHANGELOG.md (v0.1.0 scaffold, v0.2.0 Phase 2 + transport)
-- [x] Add `"icon": "assets/icon.png"` to package.json
-- [x] Add `"homepage"` to package.json
-- [x] Update .vscodeignore: add `!assets/**`
+### 3a: MCP Resources with Subscriptions
+- [ ] `debug://sessions` — live list of debug sessions (subscribable)
+- [ ] `debug://console/{sessionId}` — live console stream
+- [ ] `debug://breakpoints` — current breakpoint list (updates on add/remove/hit)
 
-### Step 3b: Validate Package — COMPLETE
-- [x] Run `node esbuild.config.mjs` — build passes
-- [x] Run `npx tsc --noEmit` — type check passes
-- [x] Run `npx vitest run` — 77 tests pass (56 + 21 new)
-- [x] Run `npx vsce package --no-dependencies` — .vsix builds (454.98 KB, 12 files)
-- [x] Inspect .vsix contents: dist/extension.js, assets/icon.png, README, LICENSE, CHANGELOG present
+### 3b: Event Notifications
+- [ ] Breakpoint hit notification
+- [ ] Exception thrown notification
+- [ ] Session start/stop notifications
 
-### Step 3c: Phase 2 Tests — COMPLETE
-- [x] debug-continue.test.ts (3 tests)
-- [x] debug-step.test.ts (5 tests)
-- [x] debug-pause.test.ts (3 tests)
-- [x] debug-breakpoint-set.test.ts (3 tests)
-- [x] debug-breakpoint-remove.test.ts (3 tests)
-- [x] debug-exception-config.test.ts (4 tests)
+### 3c: Pre-built Prompts
+- [ ] `debug_investigate` — "A breakpoint was hit. Analyze the bug."
+  - Gathers: state, locals, call stack, recent console, source context
+- [ ] `debug_trace` — "Trace execution from A to B."
+  - Sets temp breakpoints/logpoints, collects data, returns trace
 
-### Step 3d: Commit & Push — COMPLETE
-- [x] Commit marketplace fixes (CHANGELOG, icon, .vscodeignore)
-- [x] Commit Phase 2 tests
-- [x] Fix publisher to `inkan-link`
-- [x] Push to origin/main (5 commits)
+### 3d: Tests
+- [ ] Unit tests for resources
+- [ ] Unit tests for prompts
+- [ ] Integration tests for subscription flow
 
-### Step 3e: Publish — PENDING (user action)
-- [x] Publisher identified: `inkan-link`
-- [ ] Run `npx vsce publish` OR upload `debugpilot-0.2.0.vsix` at marketplace
-- [ ] Verify extension page on marketplace
+## Phase 4: Polish, Robustness & DX — NOT STARTED
 
-## Phase 4: Post-Launch (Future)
-- [ ] MCP resources with subscriptions
-- [ ] Pre-built prompts (debug_investigate, debug_trace)
-- [ ] Multi-runtime validation (Python, Go, Rust)
-- [ ] debug_launch / debug_stop
-- [ ] debug_run_to
+### 4a: Distribution
+- [ ] Submit to MCP server registry
+- [ ] Marketplace SEO (keywords, categories, screenshots)
+- [ ] README badges (installs, version, license)
+
+### 4b: Robustness
+- [ ] Graceful handling: no active session, detached session
+- [ ] Expression evaluation timeout + cancellation
+- [ ] Session reconnect after extension reload
+- [ ] Actionable error messages (not raw DAP errors)
+
+### 4c: Developer Experience
+- [ ] Status bar item showing MCP server state + port
+- [ ] VS Code walkthrough (Getting Started)
+- [ ] Example `.mcp.json` configs for Claude Code, Cursor, Continue.dev
+- [ ] Command palette: "DebugPilot: Show Connection Info"
 
 ---
 
 ## Decisions
 | Decision | Choice | Rationale |
 |----------|--------|-----------|
-| Transport | Streamable HTTP (port 45853) | Avoids OAuth/SSE issues, works with all MCP clients |
-| Build tool | esbuild | Fast, single-file output for extension host |
-| Test framework | vitest | Fast, good TS support |
-| Activation | onStartupFinished | Always available, no debug-specific trigger needed |
+| Transport | Streamable HTTP (port 45853) | Avoids OAuth/SSE issues |
+| Build | esbuild | Fast, single-file output |
+| Tests | vitest | Fast TS support |
+| Activation | onStartupFinished | Always available |
+| Phase 4 | No multi-runtime validation | We use vscode.debug.* — any VS Code debugger works automatically |
+| Logo | Debug beetle + shield | Distinctive, scales well at 128px |

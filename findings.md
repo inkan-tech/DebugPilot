@@ -1,41 +1,42 @@
 # DebugPilot — Findings
 
 ## Architecture
-- MCP server runs inside VS Code extension host process — no IPC needed
-- `vscode.debug.*` APIs proxy all DAP calls
+- MCP server runs inside VS Code extension host — no IPC needed
+- `vscode.debug.*` APIs proxy all DAP calls — any VS Code debugger works automatically
 - IDebugAdapter is the testability boundary (mock in tests)
-- Console output is buffered in a ring buffer (default 10K messages per session)
-- Source context read directly from filesystem, not DAP
+- Console output buffered in ring buffer (10K messages/session)
+- Source context read from filesystem, not DAP
 
 ## Transport
 - Streamable HTTP on `127.0.0.1:45853` — local only, no auth
-- Port reclaim: if previous DebugPilot holds the port, `/health` check + `/shutdown` to reclaim
-- CORS headers set for local dev tools
+- Port reclaim: `/health` check + `/shutdown` to reclaim from stale instances
+- `server.start(port)` accepts optional port param (port 0 = random, used in integration tests)
 
-## Build
-- esbuild bundles to `dist/extension.js` — `vscode` is external
-- `pnpm run build` may report false exit code failures; use `node esbuild.config.mjs` directly
-- Type check: `npx tsc --noEmit`
-
-## Testing
-- 7 test files, 56 tests all passing
-- Phase 1 tools fully tested
-- Phase 2 tools (control) have NO tests yet
-- Tests use vitest with vscode mock at `test/mocks/vscode.ts`
-
-## Marketplace Requirements
-- `package.json` needs `"icon"` field pointing to PNG
-- `.vscodeignore` must include `!assets/**` for icon to be packaged
-- CHANGELOG.md expected by marketplace
-- Publisher `inkan-tech` must exist on marketplace
+## Build & Test
+- `node esbuild.config.mjs` — build (don't use `pnpm run build`, exit code issues)
+- `npx tsc --noEmit` — type check
+- `npx vitest run` — all tests (unit + integration)
+- `npx vitest run test/integration/` — integration only
+- `vscode` is external in esbuild — never bundle it
 
 ## Publishing
-- Can publish via `az` CLI token instead of a manual PAT
-- `az account get-access-token --resource "499b84ac-1321-427f-aa17-267ca6975798"` gives a valid token for vsce
-- Pass with `--pat "$TOKEN"` flag to `npx vsce publish`
-- Publisher is `inkan-link`, extension URL: https://marketplace.visualstudio.com/items?itemName=inkan-link.debugpilot
+- Publisher: `inkan-link` on VS Code Marketplace
+- `az account get-access-token --resource "499b84ac-1321-427f-aa17-267ca6975798"` for vsce auth
+- `npx vsce publish --pre-release --pat "$TOKEN"`
+- Extension URL: https://marketplace.visualstudio.com/items?itemName=inkan-link.debugpilot
 
-## Debug Session Observations (live testing)
-- Exception breakpoints default to breaking on ALL exceptions (caught + uncaught)
-- Third-party extensions (Bun, LLDB) throw caught exceptions during activation
-- Setting filters to `["uncaught"]` avoids noise from other extensions
+## Tool Patterns
+- One file per tool in `src/tools/`, registered via `src/tools/index.ts`
+- All tools with sessionId: description says "Requires a sessionId from debug_sessions"
+- sessionId param: `.describe("Debug session ID (get from debug_sessions)")`
+- Constants in `src/constants.ts`, interface in `src/types.ts`, impl in `src/debug-adapter.ts`
+
+## MCP SDK Notes (for Phase 3)
+- Resources: `server.resource()` for static, `server.resource()` with subscribe for live
+- Prompts: `server.prompt()` with name, description, args, handler
+- Notifications: server can push via transport (need to investigate subscription model)
+
+## Debug Session Observations
+- Exception breakpoints default to ALL exceptions (caught + uncaught)
+- `["uncaught"]` filter avoids noise from third-party extensions
+- Flutter/Dart uses custom DAP commands: `hotReload`, `hotRestart`

@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.7.0] - 2026-03-12
+
+### Added
+- MCP resources: `debug://sessions`, `debug://console/{sessionId}`, `debug://breakpoints`
+- MCP prompts: `debug_investigate` (full bug analysis context), `debug_trace` (execution tracing)
+- Phase 2 tools: `debug_launch`, `debug_stop`, `debug_logpoint_set`, `debug_run_to`
+- Integration test framework with MCP HTTP protocol tests
+- Tool registration validation tests (18 tools verified)
+
 ## [0.6.2] - 2026-03-12
 
 ### Changed

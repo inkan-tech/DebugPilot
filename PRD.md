@@ -1,6 +1,6 @@
 # PRD-014: VS Code Debug MCP Server
 
-**Status**: Phase 1 Complete, Phase 2 In Progress (v0.6.2)
+**Status**: Phase 3 Complete (v0.7.0) — Resources, Prompts, Full Phase 2
 **Priority**: High
 **Created**: 2026-03-11
 **Target**: Open-source VS Code extension + MCP server
