@@ -92,6 +92,16 @@ Add a `.cursor/mcp.json` to your project root (see [`examples/mcp-cursor.json`](
 
 Point to the same URL. Any client supporting MCP Streamable HTTP will work.
 
+#### Claude Code Skill (optional)
+
+Install the `/debugpilot` skill to give Claude Code workflow knowledge for using the debug tools effectively:
+
+```bash
+cp -r skills/debugpilot ~/.claude/skills/debugpilot
+```
+
+Then use `/debugpilot` in any Claude Code session to activate the debug workflow.
+
 ## Usage Examples
 
 ### Inspect a paused session
@@ -234,12 +244,11 @@ src/
 
 ## Roadmap
 
-- [ ] MCP resources with subscriptions (live console stream, breakpoint events)
-- [ ] Pre-built prompts (`debug_investigate`, `debug_trace`)
-- [ ] Multi-runtime validation (Python, Go, Rust, Java)
-- [ ] `debug_launch` / `debug_stop` — start/stop debug sessions
-- [ ] `debug_run_to` — run to a specific line
-- [ ] Logpoint support
+- [x] MCP resources with subscriptions (live console stream, breakpoint events)
+- [x] Pre-built prompts (`debug_investigate`, `debug_trace`)
+- [x] Event notifications (breakpoint hit, exception, session lifecycle)
+- [x] Graceful error handling (actionable messages for missing sessions)
+- [ ] Submit to MCP server registry
 
 ## License
 

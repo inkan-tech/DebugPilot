@@ -17,3 +17,13 @@ Your AI agent can now:
 - Set and remove breakpoints
 - Control execution (step, continue, pause)
 - Read debug console output
+
+### Claude Code skill (optional)
+
+For the best experience with Claude Code, install the `/debugpilot` skill:
+
+```bash
+cp -r skills/debugpilot ~/.claude/skills/debugpilot
+```
+
+This teaches Claude the optimal debug workflow so it calls the right tools in the right order.
