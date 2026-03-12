@@ -9,9 +9,9 @@ export function registerDebugConsole(
 ): void {
   server.tool(
     TOOL_DEBUG_CONSOLE,
-    "Read buffered debug console output (stdout, stderr, console.log)",
+    "Read buffered debug console output (stdout, stderr, console.log). Requires a sessionId from debug_sessions",
     {
-      sessionId: z.string().describe("Debug session ID"),
+      sessionId: z.string().describe("Debug session ID (get from debug_sessions)"),
       since: z.string().optional().describe("ISO timestamp to filter messages after"),
       pattern: z.string().optional().describe("Regex pattern to filter messages"),
     },

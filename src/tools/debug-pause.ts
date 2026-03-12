@@ -6,8 +6,8 @@ import { TOOL_DEBUG_PAUSE } from "../constants.js";
 export function registerDebugPause(server: McpServer, adapter: IDebugAdapter): void {
   server.tool(
     TOOL_DEBUG_PAUSE,
-    "Pause a running debug session",
-    { sessionId: z.string().describe("Debug session ID"), threadId: z.number().optional().describe("Thread ID (default: first thread)") },
+    "Pause a running debug session. Requires a sessionId from debug_sessions",
+    { sessionId: z.string().describe("Debug session ID (get from debug_sessions)"), threadId: z.number().optional().describe("Thread ID (default: first thread)") },
     async ({ sessionId, threadId }) => {
       await adapter.pause(sessionId, threadId);
       return { content: [{ type: "text" as const, text: JSON.stringify({ status: "paused", sessionId }) }] };

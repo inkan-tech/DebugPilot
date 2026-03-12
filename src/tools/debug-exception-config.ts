@@ -6,9 +6,9 @@ import { TOOL_DEBUG_EXCEPTION_CONFIG } from "../constants.js";
 export function registerDebugExceptionConfig(server: McpServer, adapter: IDebugAdapter): void {
   server.tool(
     TOOL_DEBUG_EXCEPTION_CONFIG,
-    "Configure exception breakpoints (break on caught/uncaught exceptions)",
+    "Configure exception breakpoints (break on caught/uncaught exceptions). Requires a sessionId from debug_sessions",
     {
-      sessionId: z.string().describe("Debug session ID"),
+      sessionId: z.string().describe("Debug session ID (get from debug_sessions)"),
       filters: z.array(z.string()).describe('Exception filter IDs (e.g. ["uncaught", "caught"] for JS/TS, ["raised", "uncaught"] for Python, ["All", "Unhandled"] for Dart/Flutter)'),
     },
     async ({ sessionId, filters }) => {

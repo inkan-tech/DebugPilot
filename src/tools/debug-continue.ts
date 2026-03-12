@@ -6,8 +6,8 @@ import { TOOL_DEBUG_CONTINUE } from "../constants.js";
 export function registerDebugContinue(server: McpServer, adapter: IDebugAdapter): void {
   server.tool(
     TOOL_DEBUG_CONTINUE,
-    "Resume execution of a paused debug session",
-    { sessionId: z.string().describe("Debug session ID"), threadId: z.number().optional().describe("Thread ID (default: first thread)") },
+    "Resume execution of a paused debug session. Requires a sessionId from debug_sessions",
+    { sessionId: z.string().describe("Debug session ID (get from debug_sessions)"), threadId: z.number().optional().describe("Thread ID (default: first thread)") },
     async ({ sessionId, threadId }) => {
       await adapter.continue(sessionId, threadId);
       return { content: [{ type: "text" as const, text: JSON.stringify({ status: "continued", sessionId }) }] };

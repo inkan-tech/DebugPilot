@@ -6,9 +6,9 @@ import { TOOL_DEBUG_STEP } from "../constants.js";
 export function registerDebugStep(server: McpServer, adapter: IDebugAdapter): void {
   server.tool(
     TOOL_DEBUG_STEP,
-    "Step over, into, or out in a paused debug session",
+    "Step over, into, or out in a paused debug session. Requires a sessionId from debug_sessions",
     {
-      sessionId: z.string().describe("Debug session ID"),
+      sessionId: z.string().describe("Debug session ID (get from debug_sessions)"),
       type: z.enum(["over", "into", "out"]).describe("Step type"),
       threadId: z.number().optional().describe("Thread ID (default: first thread)"),
     },

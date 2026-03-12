@@ -6,9 +6,9 @@ import { TOOL_DEBUG_HOT_RELOAD } from "../constants.js";
 export function registerDebugHotReload(server: McpServer, adapter: IDebugAdapter): void {
   server.tool(
     TOOL_DEBUG_HOT_RELOAD,
-    "Trigger Flutter hot reload — injects code changes into running Dart VM, preserves app state",
+    "Trigger Flutter hot reload — injects code changes into running Dart VM, preserves app state. Requires a sessionId from debug_sessions",
     {
-      sessionId: z.string().describe("Debug session ID"),
+      sessionId: z.string().describe("Debug session ID (get from debug_sessions)"),
       reason: z.enum(["manual", "save"]).optional().describe("Trigger reason (default: manual)"),
     },
     async ({ sessionId, reason }) => {

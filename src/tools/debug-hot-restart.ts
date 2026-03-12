@@ -6,9 +6,9 @@ import { TOOL_DEBUG_HOT_RESTART } from "../constants.js";
 export function registerDebugHotRestart(server: McpServer, adapter: IDebugAdapter): void {
   server.tool(
     TOOL_DEBUG_HOT_RESTART,
-    "Trigger Flutter hot restart — full restart with code update, does NOT preserve app state",
+    "Trigger Flutter hot restart — full restart with code update, does NOT preserve app state. Requires a sessionId from debug_sessions",
     {
-      sessionId: z.string().describe("Debug session ID"),
+      sessionId: z.string().describe("Debug session ID (get from debug_sessions)"),
       reason: z.enum(["manual", "save"]).optional().describe("Trigger reason (default: manual)"),
     },
     async ({ sessionId, reason }) => {

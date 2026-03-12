@@ -9,8 +9,8 @@ export function registerDebugState(
 ): void {
   server.tool(
     TOOL_DEBUG_STATE,
-    "Get full debug state: pause location, source context, locals, call stack",
-    { sessionId: z.string().describe("Debug session ID") },
+    "Get full debug state: pause location, source context, locals, call stack. Requires a sessionId from debug_sessions",
+    { sessionId: z.string().describe("Debug session ID (get from debug_sessions)") },
     async ({ sessionId }) => {
       const state = await adapter.getState(sessionId);
       return {

@@ -6,8 +6,8 @@ import { TOOL_DEBUG_BREAKPOINT_REMOVE } from "../constants.js";
 export function registerDebugBreakpointRemove(server: McpServer, adapter: IDebugAdapter): void {
   server.tool(
     TOOL_DEBUG_BREAKPOINT_REMOVE,
-    "Remove a breakpoint by ID",
-    { id: z.string().describe("Breakpoint ID (e.g. BP#1)") },
+    "Remove a breakpoint by ID (get IDs from debug_breakpoints_list)",
+    { id: z.string().describe("Breakpoint ID from debug_breakpoints_list (e.g. BP#1)") },
     async ({ id }) => {
       await adapter.removeBreakpoint(id);
       return { content: [{ type: "text" as const, text: JSON.stringify({ status: "removed", id }) }] };

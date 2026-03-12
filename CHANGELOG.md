@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1] - 2026-03-12
+
+### Changed
+- Improved tool descriptions to guide agents to call `debug_sessions` first for sessionId
+- All sessionId params now reference `debug_sessions` in their descriptions
+- `debug_breakpoint_remove` now references `debug_breakpoints_list` for IDs
+
 ## [0.6.0] - 2026-03-11
 
 ### Added

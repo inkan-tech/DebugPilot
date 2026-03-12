@@ -9,9 +9,9 @@ export function registerDebugVariables(
 ): void {
   server.tool(
     TOOL_DEBUG_VARIABLES,
-    "Get variables for a scope or expand an object by variable reference",
+    "Get variables for a scope or expand an object by variable reference. Requires a sessionId from debug_sessions",
     {
-      sessionId: z.string().describe("Debug session ID"),
+      sessionId: z.string().describe("Debug session ID (get from debug_sessions)"),
       variableReference: z.number().describe("Variable reference to expand"),
       depth: z.number().optional().describe("Expansion depth (default 1, max 5)"),
     },

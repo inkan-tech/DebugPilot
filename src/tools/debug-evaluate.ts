@@ -9,9 +9,9 @@ export function registerDebugEvaluate(
 ): void {
   server.tool(
     TOOL_DEBUG_EVALUATE,
-    "Evaluate an expression in the context of a paused frame",
+    "Evaluate an expression in the context of a paused frame. Requires a sessionId from debug_sessions",
     {
-      sessionId: z.string().describe("Debug session ID"),
+      sessionId: z.string().describe("Debug session ID (get from debug_sessions)"),
       expression: z.string().describe("Expression to evaluate"),
       frameId: z.number().optional().describe("Stack frame ID (default: top frame)"),
     },
