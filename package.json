@@ -23,8 +23,15 @@
     "debug",
     "ai",
     "debugger",
-    "dap"
+    "dap",
+    "claude",
+    "cursor",
+    "breakpoint"
   ],
+  "galleryBanner": {
+    "color": "#1a1a2e",
+    "theme": "dark"
+  },
   "main": "./dist/extension.js",
   "activationEvents": [
     "onStartupFinished"
@@ -63,6 +70,10 @@
       {
         "command": "debugPilot.showStatus",
         "title": "DebugPilot: Show Status"
+      },
+      {
+        "command": "debugpilot.showConnectionInfo",
+        "title": "DebugPilot: Show Connection Info"
       }
     ]
   },

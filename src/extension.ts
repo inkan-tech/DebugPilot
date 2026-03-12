@@ -21,14 +21,29 @@ export async function activate(
   adapter = new VscodeDebugAdapter(sessionManager);
   server = new DebugMcpServer(adapter);
 
+  // Status bar item
+  const statusBarItem = vscode.window.createStatusBarItem(
+    vscode.StatusBarAlignment.Right,
+    100,
+  );
+  statusBarItem.command = "debugpilot.showConnectionInfo";
+  context.subscriptions.push(statusBarItem);
+
   try {
     await server.start();
   } catch (err) {
     vscode.window.showErrorMessage(
       `DebugPilot: Failed to start MCP server: ${err instanceof Error ? err.message : String(err)}`,
     );
+    statusBarItem.text = "$(debug) DebugPilot (stopped)";
+    statusBarItem.tooltip = "DebugPilot MCP Server is stopped";
+    statusBarItem.show();
     return;
   }
+
+  statusBarItem.text = `$(debug) DebugPilot :${server.port}`;
+  statusBarItem.tooltip = `DebugPilot MCP Server running on port ${server.port}`;
+  statusBarItem.show();
 
   // Register debug adapter tracker to capture console output
   const trackerFactory = new DebugOutputTrackerFactory(sessionManager);
@@ -41,7 +56,11 @@ export async function activate(
     vscode.commands.registerCommand("debugPilot.restart", async () => {
       if (server) {
         await server.stop();
+        statusBarItem.text = "$(debug) DebugPilot (stopped)";
+        statusBarItem.tooltip = "DebugPilot MCP Server is stopped";
         await server.start();
+        statusBarItem.text = `$(debug) DebugPilot :${server.port}`;
+        statusBarItem.tooltip = `DebugPilot MCP Server running on port ${server.port}`;
         vscode.window.showInformationMessage("DebugPilot: MCP server restarted");
       }
     }),
@@ -50,6 +69,17 @@ export async function activate(
       vscode.window.showInformationMessage(
         `DebugPilot: ${sessions.length} active session(s) — http://127.0.0.1:${server?.port}/mcp`,
       );
+    }),
+    vscode.commands.registerCommand("debugpilot.showConnectionInfo", async () => {
+      const url = `http://127.0.0.1:${server?.port}/mcp`;
+      const action = await vscode.window.showInformationMessage(
+        `DebugPilot MCP endpoint: ${url}`,
+        "Copy URL",
+      );
+      if (action === "Copy URL") {
+        await vscode.env.clipboard.writeText(url);
+        vscode.window.showInformationMessage("MCP endpoint URL copied to clipboard");
+      }
     }),
     sessionManager,
   );

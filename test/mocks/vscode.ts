@@ -27,6 +27,14 @@ export const window = {
   showInformationMessage: (..._args: any[]) => {},
   showErrorMessage: (..._args: any[]) => {},
   showWarningMessage: (..._args: any[]) => {},
+  createStatusBarItem: (_alignment?: any, _priority?: number) => ({
+    text: "",
+    tooltip: "",
+    command: undefined as string | undefined,
+    show: () => {},
+    hide: () => {},
+    dispose: () => {},
+  }),
 };
 
 export const commands = {
@@ -70,7 +78,19 @@ export class SourceBreakpoint {
   ) {}
 }
 
+export enum StatusBarAlignment {
+  Left = 1,
+  Right = 2,
+}
+
 export enum DebugConsoleMode {
   Separate = 0,
   MergeWithParent = 1,
 }
+
+export const env = {
+  clipboard: {
+    writeText: async (_text: string) => {},
+    readText: async () => "",
+  },
+};
