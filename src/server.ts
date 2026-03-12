@@ -27,7 +27,7 @@ export class DebugMcpServer {
     return this._port;
   }
 
-  async start(): Promise<void> {
+  async start(port: number = DEFAULT_PORT): Promise<void> {
     this.transport = new StreamableHTTPServerTransport({
       sessionIdGenerator: () => randomUUID(),
     });
@@ -71,7 +71,7 @@ export class DebugMcpServer {
       }
     });
 
-    await this.listenOnPort(DEFAULT_PORT);
+    await this.listenOnPort(port);
   }
 
   private async listenOnPort(port: number): Promise<void> {
@@ -119,7 +119,8 @@ export class DebugMcpServer {
         }
       });
       this.httpServer!.listen(port, "127.0.0.1", () => {
-        this._port = port;
+        const addr = this.httpServer!.address();
+        this._port = typeof addr === "object" && addr ? addr.port : port;
         resolve();
       });
     });

@@ -71,6 +71,7 @@
     "build:watch": "node esbuild.config.mjs --watch",
     "build:check": "tsc --noEmit",
     "test": "vitest run",
+    "test:integration": "vitest run test/integration/",
     "test:watch": "vitest",
     "package": "vsce package --no-dependencies",
     "lint": "tsc --noEmit"
