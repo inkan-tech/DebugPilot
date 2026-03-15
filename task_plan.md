@@ -4,7 +4,7 @@
 
 Ship DebugPilot as a complete MCP debug server — subscriptions, prompts, and polished DX.
 
-**Current version**: v0.7.0 | **155 tests** | **18 tools** | Published on VS Code Marketplace
+**Current version**: v0.7.3 | **155 tests** | **21 tools** | Published on VS Code Marketplace
 
 ---
 
@@ -27,54 +27,41 @@ Ship DebugPilot as a complete MCP debug server — subscriptions, prompts, and p
 
 ## Phase 3: Subscriptions + Prompts — COMPLETE
 
-Agent reacts to debug events in real-time.
+- [x] MCP Resources: `debug://sessions`, `debug://console/{sessionId}`, `debug://breakpoints`, `debug://diagnostics`
+- [x] Event Notifications: breakpoint hit, exception, session start/stop
+- [x] Pre-built Prompts: `debug_investigate`, `debug_trace`
+- [x] Tests for resources (11), prompts (6), integration (12)
 
-### 3a: MCP Resources with Subscriptions
+## Phase 4: Polish, Robustness & DX — COMPLETE
 
-- [x] `debug://sessions` — live list of debug sessions
-- [x] `debug://console/{sessionId}` — live console stream
-- [x] `debug://breakpoints` — current breakpoint list
+- [x] Status bar item with live state updates
+- [x] Graceful error handling, expression timeout
+- [x] Session reconnect after extension reload
+- [x] VS Code walkthrough, command palette integration
 
-### 3b: Event Notifications
+## Phase 5: Live Streaming & Agent Integration — COMPLETE
 
-- [x] Breakpoint hit notification
-- [x] Exception thrown notification
-- [x] Session start/stop notifications
+- [x] R1: Enhanced Status Bar (idle/running/paused/exception states)
+- [x] R2: WebSocket broker (bidirectional, same port, event push + request/response)
+- [x] R3: Console output streaming via WS events
+- [x] R5: `debug_watch` long-poll MCP tool
+- [x] R6: `debug_diagnostics` tool + `debug://diagnostics` resource + DiagnosticsWatcher
+- [x] `debug_console_history` — console from terminated/crashed sessions
+- [x] Dart auto-config: exception breakpoints → "Unhandled" only
+- [x] `debug_evaluate` context param (watch/repl/hover, default: watch)
+- [x] dpctl CLI script (sessions, state, watch, stream, repl, history)
 
-### 3c: Pre-built Prompts
+## Phase 6: Skill Documentation Rewrite — COMPLETE
 
-- [x] `debug_investigate` — "A breakpoint was hit. Analyze the bug."
-  - Gathers: state, locals, call stack, recent console, source context
-- [x] `debug_trace` — "Trace execution from A to B."
-  - Location, stack, locals, console context
-
-### 3d: Tests
-
-- [x] Unit tests for resources (11 tests)
-- [x] Unit tests for prompts (6 tests)
-- [x] Integration tests for resources + prompts (12 tests)
-
-## Phase 4: Polish, Robustness & DX — IN PROGRESS
-
-### 4a: Distribution
-
-- [ ] Submit to MCP server registry
-- [x] Marketplace SEO (keywords, categories, screenshots)
-- [x] README badges (installs, version, license)
-- [x] Example `.mcp.json` configs for Claude Code, Cursor, Continue.dev
-
-### 4b: Robustness
-
-- [x] Graceful handling: no active session, detached session (#35)
-- [x] Expression evaluation timeout + cancellation
-- [x] Session reconnect after extension reload (#36)
-- [x] Actionable error messages (not raw DAP errors)
-
-### 4c: Developer Experience
-
-- [x] Status bar item showing MCP server state + port
-- [x] VS Code walkthrough (Getting Started) (#37)
-- [x] Command palette: "DebugPilot: Show Connection Info"
+- [x] Fix protocol format (remove false `jsonrpc: "2.0"`, use actual `{id, method, params}`)
+- [x] Document all 21 MCP tools (was 18)
+- [x] Document all 19 WS dispatch methods (was 14)
+- [x] Document WS event push + subscription protocol (6 event types)
+- [x] Replace polling monitor template with event-driven streaming template
+- [x] Add `debug_watch`, `debug_diagnostics`, `debug_console_history` to workflow
+- [x] Add `evaluate` context param documentation (watch/repl/hover)
+- [x] Document Dart auto-exception-config behavior
+- [x] Add decision guide: MCP vs WS table
 
 ---
 
@@ -85,6 +72,7 @@ Agent reacts to debug events in real-time.
 | Transport | Streamable HTTP (port 45853) | Avoids OAuth/SSE issues |
 | Build | esbuild | Fast, single-file output |
 | Tests | vitest | Fast TS support |
-| Activation | onStartupFinished | Always available |
-| Phase 4 | No multi-runtime validation | We use vscode.debug.* — any VS Code debugger works automatically |
-| Logo | Debug beetle + shield | Distinctive, scales well at 128px |
+| WS protocol | Custom `{id, method, params}` | Simpler than JSON-RPC, sufficient for local use |
+| Event push | WS subscribe/broadcast | Real-time, no polling needed |
+| Evaluate context | Default "watch" | Works for Dart/Flutter locals (repl fails) |
+| Dart exceptions | Auto-config "Unhandled" | Avoids MissingPluginException false stops |
