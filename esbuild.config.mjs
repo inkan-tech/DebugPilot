@@ -10,7 +10,7 @@ const buildOptions = {
   format: "cjs",
   platform: "node",
   target: "node20",
-  external: ["vscode"],
+  external: ["vscode", "bufferutil", "utf-8-validate"],
   sourcemap: true,
   minify: false,
 };

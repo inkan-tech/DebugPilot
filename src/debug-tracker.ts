@@ -38,10 +38,18 @@ export class DebugOutputTracker implements vscode.DebugAdapterTracker {
     const text = message.body.output;
     if (!text) return;
 
-    buffer.push({
+    const consoleMessage = {
       type: mapCategory(message.body.category),
       text,
       timestamp: new Date().toISOString(),
+    };
+
+    buffer.push(consoleMessage);
+
+    // Emit for WebSocket streaming
+    this.sessionManager.events.emit("consoleOutput", {
+      sessionId: this.sessionId,
+      message: consoleMessage,
     });
   }
 }

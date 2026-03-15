@@ -37,13 +37,18 @@ export class DebugMcpServer {
     return this._port;
   }
 
+  /** Expose the underlying HTTP server for WebSocket upgrade handling. */
+  get server(): http.Server | undefined {
+    return this.httpServer;
+  }
+
   private createSession(): { server: McpServer; transport: StreamableHTTPServerTransport; notificationManager?: NotificationManager } {
     const server = new McpServer({
       name: EXTENSION_ID,
       version: "0.7.3",
     });
 
-    registerAllTools(server, this.adapter);
+    registerAllTools(server, this.adapter, this.sessionManager);
     registerAllResources(server, this.adapter);
     registerAllPrompts(server, this.adapter);
 
@@ -131,7 +136,15 @@ export class DebugMcpServer {
       const url = new URL(req.url ?? "/", `http://localhost:${this._port}`);
 
       if (url.pathname === "/mcp") {
-        await this.handleMcpRequest(req, res);
+        try {
+          await this.handleMcpRequest(req, res);
+        } catch (err) {
+          console.error(`[DebugPilot] MCP request error:`, err);
+          if (!res.headersSent) {
+            res.writeHead(500, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ jsonrpc: "2.0", error: { code: -32603, message: "Internal error" }, id: null }));
+          }
+        }
       } else if (url.pathname === "/shutdown" && req.method === "POST") {
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ status: "shutting_down" }));
@@ -176,6 +189,17 @@ export class DebugMcpServer {
       res.end(JSON.stringify({
         jsonrpc: "2.0",
         error: { code: -32000, message: "Session not found." },
+        id: null,
+      }));
+      return;
+    }
+
+    // GET without valid session — nothing to stream
+    if (req.method === "GET") {
+      res.writeHead(400, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({
+        jsonrpc: "2.0",
+        error: { code: -32000, message: "No valid session. Send an initialize request first." },
         id: null,
       }));
       return;

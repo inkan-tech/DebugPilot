@@ -3,11 +3,17 @@ import { SessionManager } from "./session-manager.js";
 import { VscodeDebugAdapter } from "./debug-adapter.js";
 import { DebugMcpServer } from "./server.js";
 import { DebugOutputTrackerFactory } from "./debug-tracker.js";
+import { StatusBarController } from "./status-bar-controller.js";
+import { DiagnosticsWatcher } from "./diagnostics-watcher.js";
+import { WebSocketBroker } from "./websocket-broker.js";
 import { CONFIG_SECTION } from "./constants.js";
 
 let server: DebugMcpServer | undefined;
 let sessionManager: SessionManager | undefined;
 let adapter: VscodeDebugAdapter | undefined;
+let statusBarController: StatusBarController | undefined;
+let diagnosticsWatcher: DiagnosticsWatcher | undefined;
+let wsBroker: WebSocketBroker | undefined;
 
 export async function activate(
   context: vscode.ExtensionContext,
@@ -26,7 +32,6 @@ export async function activate(
     vscode.StatusBarAlignment.Right,
     100,
   );
-  statusBarItem.command = "debugpilot.showConnectionInfo";
   context.subscriptions.push(statusBarItem);
 
   try {
@@ -41,9 +46,17 @@ export async function activate(
     return;
   }
 
-  statusBarItem.text = `$(debug) DebugPilot :${server.port}`;
-  statusBarItem.tooltip = `DebugPilot MCP Server running on port ${server.port}`;
-  statusBarItem.show();
+  // Wire status bar controller (R1)
+  statusBarController = new StatusBarController(sessionManager, statusBarItem, server.port);
+
+  // Wire diagnostics watcher (R6)
+  diagnosticsWatcher = new DiagnosticsWatcher(sessionManager);
+
+  // Wire WebSocket broker (R2) — shares the HTTP server on /ws
+  const httpServer = server.server;
+  if (httpServer) {
+    wsBroker = new WebSocketBroker(httpServer, sessionManager, adapter);
+  }
 
   // Register debug adapter tracker to capture console output
   const trackerFactory = new DebugOutputTrackerFactory(sessionManager);
@@ -55,12 +68,19 @@ export async function activate(
   context.subscriptions.push(
     vscode.commands.registerCommand("debugPilot.restart", async () => {
       if (server) {
+        wsBroker?.dispose();
+        wsBroker = undefined;
         await server.stop();
         statusBarItem.text = "$(debug) DebugPilot (stopped)";
         statusBarItem.tooltip = "DebugPilot MCP Server is stopped";
         await server.start();
-        statusBarItem.text = `$(debug) DebugPilot :${server.port}`;
-        statusBarItem.tooltip = `DebugPilot MCP Server running on port ${server.port}`;
+        // Re-create broker on new httpServer
+        const newHttpServer = server.server;
+        if (newHttpServer && sessionManager) {
+          wsBroker = new WebSocketBroker(newHttpServer, sessionManager, adapter);
+        }
+        statusBarController?.dispose();
+        statusBarController = new StatusBarController(sessionManager!, statusBarItem, server.port);
         vscode.window.showInformationMessage("DebugPilot: MCP server restarted");
       }
     }),
@@ -72,13 +92,18 @@ export async function activate(
     }),
     vscode.commands.registerCommand("debugpilot.showConnectionInfo", async () => {
       const url = `http://127.0.0.1:${server?.port}/mcp`;
+      const wsUrl = `ws://127.0.0.1:${server?.port}/ws`;
       const action = await vscode.window.showInformationMessage(
-        `DebugPilot MCP endpoint: ${url}`,
-        "Copy URL",
+        `DebugPilot MCP: ${url} | WS: ${wsUrl}`,
+        "Copy MCP URL",
+        "Copy WS URL",
       );
-      if (action === "Copy URL") {
+      if (action === "Copy MCP URL") {
         await vscode.env.clipboard.writeText(url);
         vscode.window.showInformationMessage("MCP endpoint URL copied to clipboard");
+      } else if (action === "Copy WS URL") {
+        await vscode.env.clipboard.writeText(wsUrl);
+        vscode.window.showInformationMessage("WebSocket URL copied to clipboard");
       }
     }),
     sessionManager,
@@ -90,6 +115,9 @@ export async function activate(
 }
 
 export async function deactivate(): Promise<void> {
+  wsBroker?.dispose();
+  statusBarController?.dispose();
+  diagnosticsWatcher?.dispose();
   adapter?.dispose();
   await server?.stop();
   sessionManager?.dispose();

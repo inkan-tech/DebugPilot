@@ -65,6 +65,17 @@ export interface DebugState {
   callStack: StackFrame[];
 }
 
+// --- Diagnostics ---
+
+export interface DiagnosticInfo {
+  file: string;
+  severity: "error" | "warning" | "info" | "hint";
+  range: { startLine: number; startCol: number; endLine: number; endCol: number };
+  message: string;
+  source?: string;
+  code?: string | number;
+}
+
 // --- IDebugAdapter interface ---
 
 export interface IDebugAdapter {
@@ -86,6 +97,7 @@ export interface IDebugAdapter {
     sessionId: string,
     expression: string,
     frameId?: number,
+    context?: "watch" | "repl" | "hover",
   ): Promise<{ result: string; type?: string; variableReference: number }>;
 
   /** Get buffered console messages */
@@ -153,6 +165,18 @@ export interface IDebugAdapter {
     command: string,
     args?: Record<string, unknown>,
   ): Promise<unknown>;
+
+  /** Get console output from terminated sessions */
+  getConsoleHistory(sessionId?: string): Array<{
+    sessionId: string;
+    name: string;
+    type: string;
+    terminatedAt: string;
+    messages: ConsoleMessage[];
+  }>;
+
+  /** Get VS Code diagnostics (linter/type errors) */
+  getDiagnostics(file?: string): DiagnosticInfo[];
 
   /** Dispose resources */
   dispose(): void;

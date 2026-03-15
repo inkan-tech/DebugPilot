@@ -39,16 +39,22 @@ export class NotificationManager {
       this.notifySessionsChanged();
     };
 
+    const onDiagnosticsChanged = () => {
+      this.notifyDiagnosticsChanged();
+    };
+
     emitter.on("sessionStarted", onSessionStarted);
     emitter.on("sessionTerminated", onSessionTerminated);
     emitter.on("stopped", onStopped);
     emitter.on("continued", onContinued);
+    emitter.on("diagnosticsChanged", onDiagnosticsChanged);
 
     this.cleanups.push(() => {
       emitter.off("sessionStarted", onSessionStarted);
       emitter.off("sessionTerminated", onSessionTerminated);
       emitter.off("stopped", onStopped);
       emitter.off("continued", onContinued);
+      emitter.off("diagnosticsChanged", onDiagnosticsChanged);
     });
   }
 
@@ -59,6 +65,12 @@ export class NotificationManager {
         // Client may not be subscribed — ignore
       });
     this.mcpServer.sendResourceListChanged().catch(() => {});
+  }
+
+  private notifyDiagnosticsChanged(): void {
+    this.mcpServer
+      .sendResourceUpdated({ uri: "debug://diagnostics" })
+      .catch(() => {});
   }
 
   private notifyBreakpointsChanged(): void {

@@ -154,11 +154,13 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.9.0",
+    "ws": "^8.19.0",
     "zod": "^3.24.0"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/vscode": "^1.96.0",
+    "@types/ws": "^8.18.1",
     "@vscode/vsce": "^3.0.0",
     "esbuild": "^0.24.0",
     "typescript": "^5.7.0",

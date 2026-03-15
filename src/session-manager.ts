@@ -18,21 +18,37 @@ export interface PauseState {
  * - "sessionTerminated" — { sessionId }
  * - "stopped"           — { sessionId, reason } (breakpoint hit, exception, step, pause)
  * - "continued"         — { sessionId }
+ * - "consoleOutput"     — { sessionId, message } (console output from debug adapter)
+ * - "diagnosticsChanged" — { files } (VS Code diagnostics changed)
  */
 export interface SessionManagerEvents {
   sessionStarted: [{ sessionId: string; name: string; type: string }];
   sessionTerminated: [{ sessionId: string }];
   stopped: [{ sessionId: string; reason: "breakpoint" | "exception" | "step" | "pause" }];
   continued: [{ sessionId: string }];
+  consoleOutput: [{ sessionId: string; message: import("./types.js").ConsoleMessage }];
+  diagnosticsChanged: [{ files: string[] }];
 }
 
 /**
  * Tracks active debug sessions, their console buffers, and pause state.
  */
+/** Metadata for a terminated session whose console is still available. */
+export interface TerminatedSessionInfo {
+  id: string;
+  name: string;
+  type: string;
+  terminatedAt: string;
+}
+
+const MAX_HISTORY = 10;
+
 export class SessionManager implements vscode.Disposable {
   private sessions = new Map<string, vscode.DebugSession>();
   private consoleBuffers = new Map<string, ConsoleBuffer>();
   private pauseStates = new Map<string, PauseState>();
+  /** Console buffers preserved after session termination. */
+  private history = new Map<string, { info: TerminatedSessionInfo; buffer: ConsoleBuffer }>();
   private disposables: vscode.Disposable[] = [];
   private readonly _emitter = new EventEmitter();
 
@@ -51,6 +67,13 @@ export class SessionManager implements vscode.Disposable {
             .getConfiguration(CONFIG_SECTION)
             .get<number>("consoleBufferSize") ?? DEFAULT_CONSOLE_BUFFER_SIZE;
         this.consoleBuffers.set(session.id, new ConsoleBuffer(bufferSize));
+
+        // Auto-configure Dart/Flutter to only break on unhandled exceptions
+        // Dart sessions fire caught MissingPluginExceptions frequently (platform channels)
+        if (session.type === "dart") {
+          Promise.resolve(session.customRequest("setExceptionBreakpoints", { filters: ["Unhandled"] })).catch(() => {});
+        }
+
         this._emitter.emit("sessionStarted", {
           sessionId: session.id,
           name: session.name,
@@ -58,6 +81,24 @@ export class SessionManager implements vscode.Disposable {
         });
       }),
       vscode.debug.onDidTerminateDebugSession((session) => {
+        // Preserve console buffer in history before removing
+        const buffer = this.consoleBuffers.get(session.id);
+        if (buffer && buffer.size > 0) {
+          this.history.set(session.id, {
+            info: {
+              id: session.id,
+              name: session.name,
+              type: session.type,
+              terminatedAt: new Date().toISOString(),
+            },
+            buffer,
+          });
+          // Evict oldest if over limit
+          if (this.history.size > MAX_HISTORY) {
+            const oldest = this.history.keys().next().value;
+            if (oldest) this.history.delete(oldest);
+          }
+        }
         this.sessions.delete(session.id);
         this.consoleBuffers.delete(session.id);
         this.pauseStates.delete(session.id);
@@ -123,6 +164,16 @@ export class SessionManager implements vscode.Disposable {
 
   getAllSessions(): Map<string, vscode.DebugSession> {
     return this.sessions;
+  }
+
+  /** Get console buffer from a terminated session. */
+  getHistoryBuffer(sessionId: string): ConsoleBuffer | undefined {
+    return this.history.get(sessionId)?.buffer;
+  }
+
+  /** Get all terminated sessions with preserved console output. */
+  getTerminatedSessions(): TerminatedSessionInfo[] {
+    return [...this.history.values()].map((h) => h.info);
   }
 
   getSessionInfoList(): SessionInfo[] {
