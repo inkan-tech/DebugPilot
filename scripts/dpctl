@@ -1,0 +1,391 @@
+#!/usr/bin/env bash
+# dpctl — DebugPilot CLI over WebSocket.
+# Single persistent connection, no MCP overhead, no REST.
+#
+# Usage: dpctl <command> [args...]
+#
+# Environment:
+#   DEBUGPILOT_PORT  (default: 45853)
+#   DEBUGPILOT_HOST  (default: 127.0.0.1)
+
+set -euo pipefail
+
+PORT="${DEBUGPILOT_PORT:-45853}"
+HOST="${DEBUGPILOT_HOST:-127.0.0.1}"
+WS_URL="ws://${HOST}:${PORT}/ws"
+
+# ── Helpers ──────────────────────────────────────────────────────────
+
+_pretty() {
+  if command -v jq &>/dev/null; then jq .; else cat; fi
+}
+
+_require_node() {
+  if ! command -v node &>/dev/null; then
+    echo "Node.js required for dpctl (ws module)" >&2; exit 1
+  fi
+}
+
+# Send a single request over WS, print the response, disconnect.
+# Args: method params_json
+_ws_call() {
+  _require_node
+  local method="$1" params="${2:-{}}"
+  node -e "
+    const ws = new (require('ws'))('${WS_URL}');
+    const t = setTimeout(() => { console.error('timeout'); process.exit(1); }, 10000);
+    ws.on('open', () => {
+      ws.send(JSON.stringify({ id: 1, method: '${method}', params: ${params} }));
+    });
+    ws.on('message', raw => {
+      const msg = JSON.parse(raw.toString());
+      // Skip push events, wait for our response (id: 1)
+      if (msg.id !== 1) return;
+      clearTimeout(t);
+      if (msg.error) {
+        console.error(JSON.stringify({ error: msg.error }));
+        ws.close();
+        process.exit(1);
+      }
+      console.log(JSON.stringify(msg.result));
+      ws.close();
+    });
+    ws.on('error', e => { console.error(e.message); process.exit(1); });
+  " | _pretty
+}
+
+_session_id() {
+  if [[ -n "${1:-}" ]]; then echo "$1"; return; fi
+  _require_node
+  local sessions
+  sessions=$(node -e "
+    const ws = new (require('ws'))('${WS_URL}');
+    const t = setTimeout(() => process.exit(1), 5000);
+    ws.on('open', () => ws.send(JSON.stringify({ id: 1, method: 'sessions' })));
+    ws.on('message', raw => {
+      const msg = JSON.parse(raw.toString());
+      if (msg.id !== 1) return;
+      clearTimeout(t);
+      console.log(JSON.stringify(msg.result));
+      ws.close();
+    });
+    ws.on('error', () => process.exit(1));
+  " 2>/dev/null)
+  local count
+  count=$(echo "$sessions" | jq 'length' 2>/dev/null || echo 0)
+  if [[ "$count" == "0" ]]; then
+    echo "No active debug sessions" >&2; exit 1
+  elif [[ "$count" == "1" ]]; then
+    echo "$sessions" | jq -r '.[0].id'
+  else
+    echo "Multiple sessions — specify session ID:" >&2
+    echo "$sessions" | jq -r '.[] | "  \(.id)  \(.name) [\(.status)]"' >&2
+    exit 1
+  fi
+}
+
+# ── Commands ─────────────────────────────────────────────────────────
+
+cmd_help() {
+  cat <<'EOF'
+dpctl — DebugPilot CLI (WebSocket)
+
+READ:
+  sessions (ss)                   List debug sessions
+  state (st) [SESSION]            Full debug state (location, source, locals, stack)
+  vars (v) SESSION REF [DEPTH]    Expand variable by reference
+  console (con) [SESSION] [--since T] [--pattern P]
+  breakpoints (bps)               List breakpoints
+  diagnostics (diag) [--file P]   VS Code diagnostics (errors, warnings)
+  history (hist) [SESSION] [--pattern P]  Console from terminated/crashed sessions
+
+CONTROL:
+  continue (c) [SESSION]          Resume execution
+  step (s) [SESSION] [over|into|out]
+  pause (p) [SESSION]             Pause execution
+  stop [SESSION]                  Stop debug session
+  launch CONFIG_NAME              Launch a debug configuration
+  evaluate (ev) [SESSION] EXPR    Evaluate expression in current frame
+  bp-set FILE LINE [CONDITION]    Set breakpoint
+  bp-rm ID                        Remove breakpoint
+  run-to [SESSION] FILE LINE      Run to a specific line
+
+STREAMING:
+  watch (w) [EVENTS...] [--timeout S]  Wait for one debug event (default: stopped)
+  stream [EVENTS...]              Stream events continuously (ctrl-c to stop)
+  repl                            Interactive REPL over WebSocket
+
+MISC:
+  health                          Server health check (HTTP)
+  help                            This help
+
+SESSION auto-detected when only one is active.
+All commands use a single WebSocket connection — zero HTTP overhead.
+EOF
+}
+
+cmd_health() {
+  curl -sf "http://${HOST}:${PORT}/health" | _pretty
+}
+
+cmd_sessions() {
+  _ws_call sessions
+}
+
+cmd_state() {
+  local sid; sid=$(_session_id "${1:-}")
+  _ws_call state "{\"sessionId\":\"${sid}\"}"
+}
+
+cmd_vars() {
+  local sid="$1" ref="$2" depth="${3:-1}"
+  _ws_call variables "{\"sessionId\":\"${sid}\",\"variableReference\":${ref},\"depth\":${depth}}"
+}
+
+cmd_console() {
+  local sid="" since="" pattern=""
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --since)  since="$2"; shift 2;;
+      --pattern) pattern="$2"; shift 2;;
+      *) sid="$1"; shift;;
+    esac
+  done
+  sid=$(_session_id "$sid")
+  local params="{\"sessionId\":\"${sid}\""
+  [[ -n "$since" ]]   && params="${params},\"since\":\"${since}\""
+  [[ -n "$pattern" ]] && params="${params},\"pattern\":\"${pattern}\""
+  params="${params}}"
+  _ws_call console "$params"
+}
+
+cmd_breakpoints() {
+  _ws_call breakpoints
+}
+
+cmd_diagnostics() {
+  local file=""
+  [[ "${1:-}" == "--file" ]] && file="$2"
+  if [[ -n "$file" ]]; then
+    _ws_call diagnostics "{\"file\":\"${file}\"}"
+  else
+    _ws_call diagnostics
+  fi
+}
+
+cmd_history() {
+  local sid="" pattern=""
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --pattern) pattern="$2"; shift 2;;
+      *) sid="$1"; shift;;
+    esac
+  done
+  local params="{"
+  [[ -n "$sid" ]]     && params="${params}\"sessionId\":\"${sid}\","
+  [[ -n "$pattern" ]] && params="${params}\"pattern\":\"${pattern}\","
+  params="${params%,}}"
+  _ws_call consoleHistory "$params"
+}
+
+cmd_continue() {
+  local sid; sid=$(_session_id "${1:-}")
+  _ws_call continue "{\"sessionId\":\"${sid}\"}"
+}
+
+cmd_step() {
+  local sid; sid=$(_session_id "${1:-}")
+  local type="${2:-over}"
+  _ws_call step "{\"sessionId\":\"${sid}\",\"type\":\"${type}\"}"
+}
+
+cmd_pause() {
+  local sid; sid=$(_session_id "${1:-}")
+  _ws_call pause "{\"sessionId\":\"${sid}\"}"
+}
+
+cmd_stop() {
+  local sid; sid=$(_session_id "${1:-}")
+  _ws_call stop "{\"sessionId\":\"${sid}\"}"
+}
+
+cmd_launch() {
+  local config="$1"
+  _ws_call launch "{\"configName\":\"${config}\"}"
+}
+
+cmd_evaluate() {
+  local sid; sid=$(_session_id "${1:-}")
+  shift 2>/dev/null || true
+  local expr="$*"
+  if [[ -z "$expr" ]]; then
+    expr="$sid"
+    sid=$(_session_id "")
+  fi
+  local expr_escaped
+  expr_escaped=$(echo "$expr" | jq -Rs .)
+  _ws_call evaluate "{\"sessionId\":\"${sid}\",\"expression\":${expr_escaped}}"
+}
+
+cmd_bp_set() {
+  local file="$1" line="$2" condition="${3:-}"
+  local params="{\"file\":\"${file}\",\"line\":${line}"
+  [[ -n "$condition" ]] && params="${params},\"condition\":\"${condition}\""
+  params="${params}}"
+  _ws_call setBreakpoint "$params"
+}
+
+cmd_bp_rm() {
+  _ws_call removeBreakpoint "{\"id\":\"$1\"}"
+}
+
+cmd_run_to() {
+  local sid; sid=$(_session_id "${1:-}")
+  local file="$2" line="$3"
+  _ws_call runTo "{\"sessionId\":\"${sid}\",\"file\":\"${file}\",\"line\":${line}}"
+}
+
+cmd_watch() {
+  _require_node
+  local timeout=30 events=()
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --timeout) timeout="$2"; shift 2;;
+      *) events+=("\"$1\""); shift;;
+    esac
+  done
+  [[ ${#events[@]} -eq 0 ]] && events=("\"stopped\"")
+  local events_json
+  events_json=$(IFS=,; echo "[${events[*]}]")
+
+  echo "Waiting ${timeout}s for events: ${events_json} ..." >&2
+  node -e "
+    const ws = new (require('ws'))('${WS_URL}');
+    const t = setTimeout(() => {
+      console.log(JSON.stringify({ timeout: true, waited_ms: ${timeout}000 }));
+      ws.close(); process.exit(0);
+    }, ${timeout}000);
+    ws.on('open', () => ws.send(JSON.stringify({ action: 'subscribe', events: ${events_json} })));
+    ws.on('message', raw => {
+      const msg = JSON.parse(raw.toString());
+      if (msg.id !== undefined) return; // skip request responses
+      clearTimeout(t);
+      console.log(raw.toString());
+      ws.close();
+    });
+    ws.on('error', e => { console.error(e.message); process.exit(1); });
+  " | _pretty
+}
+
+cmd_stream() {
+  _require_node
+  local events=("$@")
+  [[ ${#events[@]} -eq 0 ]] && events=("*")
+  local events_json
+  events_json=$(printf '"%s",' "${events[@]}")
+  events_json="[${events_json%,}]"
+
+  node -e "
+    const ws = new (require('ws'))('${WS_URL}');
+    ws.on('open', () => ws.send(JSON.stringify({ action: 'subscribe', events: ${events_json} })));
+    ws.on('message', raw => {
+      const msg = JSON.parse(raw.toString());
+      if (msg.id !== undefined) return; // skip request responses
+      console.log(raw.toString());
+    });
+    ws.on('close', () => process.exit(0));
+    ws.on('error', e => { console.error(e.message); process.exit(1); });
+    process.on('SIGINT', () => { ws.close(); process.exit(0); });
+  "
+}
+
+cmd_repl() {
+  _require_node
+  echo "DebugPilot REPL — type method + JSON params, e.g.: state {\"sessionId\":\"abc\"}"
+  echo "Type 'quit' to exit, 'sub EVENT...' to subscribe to events."
+  echo ""
+  node -e "
+    const readline = require('readline');
+    const ws = new (require('ws'))('${WS_URL}');
+    let reqId = 1;
+
+    const rl = readline.createInterface({ input: process.stdin, output: process.stdout, prompt: 'dp> ' });
+
+    ws.on('open', () => {
+      // Subscribe to all events by default
+      ws.send(JSON.stringify({ action: 'subscribe', events: ['*'] }));
+      rl.prompt();
+    });
+
+    ws.on('message', raw => {
+      const msg = JSON.parse(raw.toString());
+      if (msg.id !== undefined) {
+        // Response
+        if (msg.error) console.log('\x1b[31mERR:\x1b[0m', msg.error);
+        else console.log(JSON.stringify(msg.result, null, 2));
+      } else {
+        // Push event
+        console.log('\x1b[36mEVENT:\x1b[0m', JSON.stringify(msg, null, 2));
+      }
+      rl.prompt();
+    });
+
+    rl.on('line', line => {
+      const trimmed = line.trim();
+      if (!trimmed) { rl.prompt(); return; }
+      if (trimmed === 'quit' || trimmed === 'exit') { ws.close(); process.exit(0); }
+      if (trimmed.startsWith('sub ')) {
+        const events = trimmed.slice(4).split(/\s+/);
+        ws.send(JSON.stringify({ action: 'subscribe', events }));
+        console.log('Subscribed to:', events);
+        rl.prompt(); return;
+      }
+      // Parse: method {params} or just method
+      const spaceIdx = trimmed.indexOf(' ');
+      let method, params;
+      if (spaceIdx === -1) {
+        method = trimmed;
+        params = {};
+      } else {
+        method = trimmed.slice(0, spaceIdx);
+        try { params = JSON.parse(trimmed.slice(spaceIdx + 1)); }
+        catch { console.log('Invalid JSON params'); rl.prompt(); return; }
+      }
+      ws.send(JSON.stringify({ id: reqId++, method, params }));
+    });
+
+    rl.on('close', () => { ws.close(); process.exit(0); });
+    ws.on('error', e => { console.error(e.message); process.exit(1); });
+    ws.on('close', () => { console.log('Disconnected'); process.exit(0); });
+  "
+}
+
+# ── Dispatch ─────────────────────────────────────────────────────────
+
+cmd="${1:-help}"
+shift 2>/dev/null || true
+
+case "$cmd" in
+  help|-h|--help)     cmd_help;;
+  health)             cmd_health;;
+  sessions|ss)        cmd_sessions;;
+  state|st)           cmd_state "$@";;
+  vars|v)             cmd_vars "$@";;
+  console|con)        cmd_console "$@";;
+  breakpoints|bps)    cmd_breakpoints;;
+  diagnostics|diag)   cmd_diagnostics "$@";;
+  history|hist)       cmd_history "$@";;
+  continue|c)         cmd_continue "$@";;
+  step|s)             cmd_step "$@";;
+  pause|p)            cmd_pause "$@";;
+  stop)               cmd_stop "$@";;
+  launch)             cmd_launch "$@";;
+  evaluate|ev)        cmd_evaluate "$@";;
+  bp-set)             cmd_bp_set "$@";;
+  bp-rm)              cmd_bp_rm "$@";;
+  run-to)             cmd_run_to "$@";;
+  watch|w)            cmd_watch "$@";;
+  stream)             cmd_stream "$@";;
+  repl)               cmd_repl;;
+  *)                  echo "Unknown command: $cmd" >&2; cmd_help; exit 1;;
+esac
