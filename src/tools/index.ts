@@ -1,5 +1,6 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { IDebugAdapter } from "../types.js";
+import type { SessionManager } from "../session-manager.js";
 
 import { registerDebugSessions } from "./debug-sessions.js";
 import { registerDebugState } from "./debug-state.js";
@@ -19,10 +20,14 @@ import { registerDebugLogpointSet } from "./debug-logpoint-set.js";
 import { registerDebugRunTo } from "./debug-run-to.js";
 import { registerDebugHotReload } from "./debug-hot-reload.js";
 import { registerDebugHotRestart } from "./debug-hot-restart.js";
+import { registerDebugWatch } from "./debug-watch.js";
+import { registerDebugDiagnostics } from "./debug-diagnostics.js";
+import { registerDebugConsoleHistory } from "./debug-console-history.js";
 
 export function registerAllTools(
   server: McpServer,
   adapter: IDebugAdapter,
+  sessionManager?: SessionManager,
 ): void {
   registerDebugSessions(server, adapter);
   registerDebugState(server, adapter);
@@ -42,4 +47,9 @@ export function registerAllTools(
   registerDebugRunTo(server, adapter);
   registerDebugHotReload(server, adapter);
   registerDebugHotRestart(server, adapter);
+  registerDebugDiagnostics(server, adapter);
+  registerDebugConsoleHistory(server, adapter);
+  if (sessionManager) {
+    registerDebugWatch(server, adapter, sessionManager);
+  }
 }

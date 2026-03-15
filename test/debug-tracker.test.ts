@@ -1,3 +1,4 @@
+import { EventEmitter } from "node:events";
 import { describe, it, expect, beforeEach } from "vitest";
 import { ConsoleBuffer } from "../src/console-buffer.js";
 import { DebugOutputTracker, DebugOutputTrackerFactory } from "../src/debug-tracker.js";
@@ -8,6 +9,7 @@ function createMockSessionManager(
 ): SessionManager {
   return {
     getConsoleBuffer: (id: string) => buffers.get(id),
+    events: new EventEmitter(),
   } as unknown as SessionManager;
 }
 

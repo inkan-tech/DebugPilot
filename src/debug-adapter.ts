@@ -6,8 +6,10 @@ import type {
   Variable,
   ConsoleMessage,
   BreakpointInfo,
+  DiagnosticInfo,
   StackFrame,
 } from "./types.js";
+import { collectDiagnostics } from "./diagnostics-watcher.js";
 import { SessionManager } from "./session-manager.js";
 import { readSourceContext } from "./source-reader.js";
 import {
@@ -149,12 +151,13 @@ export class VscodeDebugAdapter implements IDebugAdapter {
     sessionId: string,
     expression: string,
     frameId?: number,
+    context?: "watch" | "repl" | "hover",
   ): Promise<{ result: string; type?: string; variableReference: number }> {
     const session = requireSession(this.sessionManager, sessionId);
 
     const args: Record<string, unknown> = {
       expression,
-      context: "repl",
+      context: context ?? "watch",
     };
     if (frameId !== undefined) {
       args.frameId = frameId;
@@ -309,6 +312,25 @@ export class VscodeDebugAdapter implements IDebugAdapter {
   async customRequest(sessionId: string, command: string, args?: Record<string, unknown>): Promise<unknown> {
     const session = requireSession(this.sessionManager, sessionId);
     return session.customRequest(command, args);
+  }
+
+  getConsoleHistory(sessionId?: string) {
+    const terminated = this.sessionManager.getTerminatedSessions();
+    const filtered = sessionId
+      ? terminated.filter((t) => t.id === sessionId)
+      : terminated;
+
+    return filtered.map((t) => ({
+      sessionId: t.id,
+      name: t.name,
+      type: t.type,
+      terminatedAt: t.terminatedAt,
+      messages: this.sessionManager.getHistoryBuffer(t.id)?.getMessages() ?? [],
+    }));
+  }
+
+  getDiagnostics(file?: string): DiagnosticInfo[] {
+    return collectDiagnostics(file);
   }
 
   dispose(): void {

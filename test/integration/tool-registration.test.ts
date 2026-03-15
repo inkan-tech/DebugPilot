@@ -23,6 +23,8 @@ const EXPECTED_TOOL_NAMES = [
   constants.TOOL_DEBUG_RUN_TO,
   constants.TOOL_DEBUG_HOT_RELOAD,
   constants.TOOL_DEBUG_HOT_RESTART,
+  constants.TOOL_DEBUG_DIAGNOSTICS,
+  constants.TOOL_DEBUG_CONSOLE_HISTORY,
 ];
 
 describe("tool registration", () => {
