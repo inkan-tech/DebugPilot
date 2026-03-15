@@ -14,10 +14,11 @@ export function registerDebugEvaluate(
       sessionId: z.string().describe("Debug session ID (get from debug_sessions)"),
       expression: z.string().describe("Expression to evaluate"),
       frameId: z.number().optional().describe("Stack frame ID (default: top frame)"),
+      context: z.enum(["watch", "repl", "hover"]).optional().describe("Evaluation context: 'watch' (default, variable inspection), 'repl' (execute statements), 'hover' (tooltip)"),
     },
-    async ({ sessionId, expression, frameId }) => {
+    async ({ sessionId, expression, frameId, context }) => {
       try {
-        const result = await adapter.evaluate(sessionId, expression, frameId);
+        const result = await adapter.evaluate(sessionId, expression, frameId, context);
         return {
           content: [
             {

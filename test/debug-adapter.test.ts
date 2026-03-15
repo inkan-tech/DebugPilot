@@ -364,7 +364,7 @@ describe("VscodeDebugAdapter.evaluate", () => {
 
     expect(session.customRequest).toHaveBeenCalledWith("evaluate", {
       expression: "x",
-      context: "repl",
+      context: "watch",
       frameId: 5,
     });
   });
