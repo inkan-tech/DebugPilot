@@ -57,26 +57,29 @@ export class StatusBarController {
   }
 
   private update(): void {
+    const mcp = `http://127.0.0.1:${this.port}/mcp`;
+    const ws = `ws://127.0.0.1:${this.port}/ws`;
+
     switch (this.state) {
       case "idle":
         this.item.text = `$(debug-disconnect) DebugPilot :${this.port}`;
-        this.item.tooltip = `DebugPilot MCP Server running on port ${this.port}`;
+        this.item.tooltip = `DebugPilot — MCP: ${mcp}  WS: ${ws}\nClick to copy URLs`;
         this.item.command = "debugpilot.showConnectionInfo";
         break;
       case "running":
         this.item.text = `$(debug-start) DebugPilot :${this.port}`;
-        this.item.tooltip = `DebugPilot — debugging in progress`;
-        this.item.command = "debugPilot.showStatus";
+        this.item.tooltip = `DebugPilot — debugging in progress\nMCP: ${mcp}  WS: ${ws}`;
+        this.item.command = "debugpilot.showConnectionInfo";
         break;
       case "paused":
         this.item.text = `$(debug-pause) DebugPilot :${this.port} [paused]`;
-        this.item.tooltip = `DebugPilot — paused at breakpoint/step`;
-        this.item.command = "workbench.view.debug";
+        this.item.tooltip = `DebugPilot — paused at breakpoint/step\nMCP: ${mcp}  WS: ${ws}`;
+        this.item.command = "debugpilot.showConnectionInfo";
         break;
       case "exception":
         this.item.text = `$(error) DebugPilot :${this.port} [exception]`;
-        this.item.tooltip = `DebugPilot — stopped on exception`;
-        this.item.command = "workbench.view.debug";
+        this.item.tooltip = `DebugPilot — stopped on exception\nMCP: ${mcp}  WS: ${ws}`;
+        this.item.command = "debugpilot.showConnectionInfo";
         break;
     }
     this.item.show();

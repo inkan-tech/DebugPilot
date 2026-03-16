@@ -110,7 +110,7 @@ export async function activate(
   );
 
   vscode.window.showInformationMessage(
-    `DebugPilot: MCP server running on http://127.0.0.1:${server.port}/mcp`,
+    `DebugPilot: MCP http://127.0.0.1:${server.port}/mcp  WS ws://127.0.0.1:${server.port}/ws`,
   );
 }
 
