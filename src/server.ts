@@ -45,7 +45,7 @@ export class DebugMcpServer {
   private createSession(): { server: McpServer; transport: StreamableHTTPServerTransport; notificationManager?: NotificationManager } {
     const server = new McpServer({
       name: EXTENSION_ID,
-      version: "0.7.3",
+      version: "0.9.1",
     });
 
     registerAllTools(server, this.adapter, this.sessionManager);
@@ -153,6 +153,10 @@ export class DebugMcpServer {
       } else if (url.pathname === "/health") {
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ status: "ok", name: EXTENSION_ID, sessions: this.sessions.size }));
+      } else if (url.pathname === "/.well-known/oauth-protected-resource") {
+        // Signal to MCP clients that this local server requires no OAuth authorization
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ resource: `http://127.0.0.1:${this._port}`, authorization_servers: [] }));
       } else {
         res.writeHead(404, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ error: "not_found" }));

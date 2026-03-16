@@ -2,7 +2,7 @@
   "name": "debugpilot",
   "displayName": "DebugPilot",
   "description": "MCP server exposing VS Code Debug Adapter Protocol to AI agents",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "mcpName": "io.github.inkan-tech/debugpilot",
   "publisher": "inkan-link",
   "license": "Apache-2.0",
@@ -99,7 +99,7 @@
           {
             "id": "debugpilot.startDebug",
             "title": "Start a Debug Session",
-            "description": "Start any debug session in VS Code — Node.js, Python, C++, or any other debugger.\n\nSet a breakpoint in your code and launch the debugger.\n\n[Open Run and Debug](command:workbench.action.debug.start)",
+            "description": "Start any debug session in VS Code \u2014 Node.js, Python, C++, or any other debugger.\n\nSet a breakpoint in your code and launch the debugger.\n\n[Open Run and Debug](command:workbench.action.debug.start)",
             "media": {
               "markdown": "media/walkthrough/start-debug.md"
             },
@@ -110,7 +110,7 @@
           {
             "id": "debugpilot.connectAgent",
             "title": "Connect Your AI Agent",
-            "description": "Once your MCP client is configured, your AI agent can discover DebugPilot's tools automatically.\n\nAsk your agent to list debug sessions — it will use the `debug_sessions` tool to see active sessions.\n\n[Show Status](command:debugPilot.showStatus)",
+            "description": "Once your MCP client is configured, your AI agent can discover DebugPilot's tools automatically.\n\nAsk your agent to list debug sessions \u2014 it will use the `debug_sessions` tool to see active sessions.\n\n[Show Status](command:debugPilot.showStatus)",
             "media": {
               "markdown": "media/walkthrough/connect-agent.md"
             },
@@ -121,7 +121,7 @@
           {
             "id": "debugpilot.useTools",
             "title": "Use Debug Tools",
-            "description": "Your AI agent now has access to powerful debug tools:\n\n- **debug_state** — View current location, source, locals, and call stack\n- **debug_variables** — Inspect and expand variables\n- **debug_evaluate** — Evaluate expressions in the current frame\n- **debug_breakpoint_set** — Set breakpoints programmatically\n- **debug_step** — Step over, into, or out\n- **debug_continue** — Resume execution\n\nAsk your agent to investigate a bug — it can read variables, set breakpoints, and step through code.",
+            "description": "Your AI agent now has access to powerful debug tools:\n\n- **debug_state** \u2014 View current location, source, locals, and call stack\n- **debug_variables** \u2014 Inspect and expand variables\n- **debug_evaluate** \u2014 Evaluate expressions in the current frame\n- **debug_breakpoint_set** \u2014 Set breakpoints programmatically\n- **debug_step** \u2014 Step over, into, or out\n- **debug_continue** \u2014 Resume execution\n\nAsk your agent to investigate a bug \u2014 it can read variables, set breakpoints, and step through code.",
             "media": {
               "markdown": "media/walkthrough/use-tools.md"
             },
