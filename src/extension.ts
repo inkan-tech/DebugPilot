@@ -23,6 +23,8 @@ export async function activate(
     return;
   }
 
+  const port = config.get<number>("port", 45853);
+
   sessionManager = new SessionManager();
   adapter = new VscodeDebugAdapter(sessionManager);
   server = new DebugMcpServer(adapter, sessionManager);
@@ -35,7 +37,7 @@ export async function activate(
   context.subscriptions.push(statusBarItem);
 
   try {
-    await server.start();
+    await server.start(port);
   } catch (err) {
     vscode.window.showErrorMessage(
       `DebugPilot: Failed to start MCP server: ${err instanceof Error ? err.message : String(err)}`,
@@ -73,7 +75,8 @@ export async function activate(
         await server.stop();
         statusBarItem.text = "$(debug) DebugPilot (stopped)";
         statusBarItem.tooltip = "DebugPilot MCP Server is stopped";
-        await server.start();
+        const restartPort = vscode.workspace.getConfiguration(CONFIG_SECTION).get<number>("port", 45853);
+        await server.start(restartPort);
         // Re-create broker on new httpServer
         const newHttpServer = server.server;
         if (newHttpServer && sessionManager) {

@@ -2,7 +2,7 @@
   "name": "debugpilot",
   "displayName": "DebugPilot",
   "description": "MCP server exposing VS Code Debug Adapter Protocol to AI agents",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "mcpName": "io.github.inkan-tech/debugpilot",
   "publisher": "inkan-link",
   "license": "Apache-2.0",
@@ -60,6 +60,11 @@
           "type": "number",
           "default": 10,
           "description": "Number of source lines to show above and below the current line"
+        },
+        "debugPilot.port": {
+          "type": "number",
+          "default": 45853,
+          "description": "Port for the DebugPilot MCP/WebSocket server. Override per-workspace to avoid conflicts (e.g. set 45854 in the DebugPilot development workspace)."
         }
       }
     },
