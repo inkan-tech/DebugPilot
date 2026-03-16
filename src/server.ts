@@ -274,16 +274,44 @@ export class DebugMcpServer {
                     shutdownReq.on("error", () => reject(new Error(`Port ${port} reclaim failed`)));
                     shutdownReq.end();
                   } else {
-                    reject(new Error(`Port ${port} is in use by another service`));
+                    // Another service owns this port — fall back to random port
+                    this.httpServer!.listen(0, "127.0.0.1", () => {
+                      const addr = this.httpServer!.address();
+                      this._port = typeof addr === "object" && addr ? addr.port : 0;
+                      console.log(`[DebugPilot] Port ${port} in use by another service, using port ${this._port}`);
+                      resolve();
+                    });
                   }
                 } catch {
-                  reject(new Error(`Port ${port} is in use by another service`));
+                  // Not a DebugPilot instance — fall back to a random port
+                  this.httpServer!.listen(0, "127.0.0.1", () => {
+                    const addr = this.httpServer!.address();
+                    this._port = typeof addr === "object" && addr ? addr.port : 0;
+                    console.log(`[DebugPilot] Port ${port} in use by another service, using port ${this._port}`);
+                    resolve();
+                  });
                 }
               });
             },
           );
-          killReq.on("error", () => reject(new Error(`Port ${port} is in use`)));
-          killReq.on("timeout", () => { killReq.destroy(); reject(new Error(`Port ${port} is in use`)); });
+          killReq.on("error", () => {
+            // Port busy, no HTTP server responding — fall back to random port
+            this.httpServer!.listen(0, "127.0.0.1", () => {
+              const addr = this.httpServer!.address();
+              this._port = typeof addr === "object" && addr ? addr.port : 0;
+              console.log(`[DebugPilot] Port ${port} in use, using port ${this._port}`);
+              resolve();
+            });
+          });
+          killReq.on("timeout", () => {
+            killReq.destroy();
+            this.httpServer!.listen(0, "127.0.0.1", () => {
+              const addr = this.httpServer!.address();
+              this._port = typeof addr === "object" && addr ? addr.port : 0;
+              console.log(`[DebugPilot] Port ${port} in use (timeout), using port ${this._port}`);
+              resolve();
+            });
+          });
           killReq.end();
         } else {
           reject(err);
