@@ -2,7 +2,7 @@
   "name": "debugpilot",
   "displayName": "DebugPilot",
   "description": "MCP server exposing VS Code Debug Adapter Protocol to AI agents",
-  "version": "0.9.1",
+  "version": "0.10.1",
   "mcpName": "io.github.inkan-tech/debugpilot",
   "publisher": "inkan-link",
   "license": "Apache-2.0",
@@ -65,6 +65,16 @@
           "type": "number",
           "default": 45853,
           "description": "Port for the DebugPilot MCP/WebSocket server. Override per-workspace to avoid conflicts (e.g. set 45854 in the DebugPilot development workspace)."
+        },
+        "debugPilot.startMode": {
+          "type": "string",
+          "enum": ["lazy", "auto"],
+          "default": "lazy",
+          "enumDescriptions": [
+            "Start MCP server on first debug session or manual trigger (default)",
+            "Start MCP server immediately when VS Code opens"
+          ],
+          "description": "Controls when the DebugPilot MCP server starts."
         }
       }
     },
@@ -77,7 +87,7 @@
           {
             "id": "debugpilot.install",
             "title": "Install DebugPilot",
-            "description": "DebugPilot is now installed. It starts an MCP server automatically when VS Code launches.\n\nYou should see a **DebugPilot :PORT** indicator in the status bar.\n\n[Show Connection Info](command:debugpilot.showConnectionInfo)",
+            "description": "DebugPilot is now installed. By default (lazy mode), the MCP server starts when you launch your first debug session. You can also click the **DebugPilot (waiting)** status bar item to start it manually.\n\nSet `debugPilot.startMode` to `auto` for immediate startup.\n\n[Show Connection Info](command:debugpilot.showConnectionInfo)",
             "media": {
               "markdown": "media/walkthrough/install.md"
             },
@@ -133,6 +143,14 @@
       }
     ],
     "commands": [
+      {
+        "command": "debugpilot.start",
+        "title": "DebugPilot: Start MCP Server"
+      },
+      {
+        "command": "debugpilot.stop",
+        "title": "DebugPilot: Stop MCP Server"
+      },
       {
         "command": "debugPilot.restart",
         "title": "DebugPilot: Restart MCP Server"
