@@ -24,6 +24,34 @@
       "presentation": {
         "reveal": "never"
       }
+    },
+    {
+      "label": "Start Claude Code",
+      "type": "shell",
+      "command": "SESSION=\"claude-$(basename '${workspaceFolder}')\"; byobu has-session -t \"$SESSION\" 2>/dev/null && byobu attach-session -t \"$SESSION\" || byobu new-session -s \"$SESSION\" 'claude --permission-mode auto'",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      },
+      "problemMatcher": {
+        "owner": "custom",
+        "pattern": {
+          "regexp": "^$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "."
+        }
+      },
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      }
     }
   ]
 }
