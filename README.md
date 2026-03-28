@@ -180,12 +180,21 @@ VS Code settings under `debugPilot.*`:
 | Setting | Default | Description |
 |---------|---------|-------------|
 | `debugPilot.enabled` | `true` | Enable/disable the MCP server |
+| `debugPilot.startMode` | `"lazy"` | `"lazy"` — start on first debug session or manual trigger; `"auto"` — start immediately on VS Code open |
 | `debugPilot.consoleBufferSize` | `10000` | Max console messages to buffer per session |
 | `debugPilot.variableDepthLimit` | `1` | Default depth for variable expansion |
 | `debugPilot.sourceContextLines` | `10` | Lines of source shown above/below current position |
 
+### Start Modes
+
+**Lazy (default):** The MCP server does not start until you either start a debug session or click the status bar item. This avoids occupying a port and consuming resources when you're not debugging. The status bar shows "DebugPilot (waiting)" until the server starts.
+
+**Auto:** The MCP server starts immediately when VS Code opens (previous behavior). Use this if your AI agent needs to connect before you start debugging.
+
 ### Commands
 
+- **DebugPilot: Start MCP Server** — manually start the server (useful in lazy mode)
+- **DebugPilot: Stop MCP Server** — stop the server and free the port
 - **DebugPilot: Restart MCP Server** — restart without reloading the window
 - **DebugPilot: Show Status** — display active sessions and server URL
 

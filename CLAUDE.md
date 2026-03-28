@@ -24,6 +24,16 @@ Single-package VS Code extension. The MCP server runs inside the extension host 
 - `src/types.ts` — IDebugAdapter interface + shared types
 - `src/constants.ts` — tool names, defaults
 
+## Release Checklist
+
+When releasing a new version:
+
+1. Bump version in `package.json` and `src/server.ts` (MCP server version field)
+2. Update `CHANGELOG.md` — add a new section at the top with the version, date, and all changes (Added/Changed/Fixed/Removed). Every user-facing change must be listed.
+3. Run full build + tests: `npx tsc --noEmit && node esbuild.config.mjs && npx vitest run`
+4. Package: `npx vsce package --no-dependencies`
+5. Publish: `VSCE_PAT=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 --query accessToken -o tsv) npx vsce publish --pre-release --no-dependencies`
+
 ## Conventions
 
 - All tools go in `src/tools/` — one file per tool, registered via `src/tools/index.ts`
