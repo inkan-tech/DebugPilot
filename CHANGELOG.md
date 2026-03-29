@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.10.2] - 2026-03-29
+
+### Changed
+
+- Published as stable release (previously pre-release only)
+
 ## [0.10.1] - 2026-03-28
 
 ### Added
